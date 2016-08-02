@@ -54,7 +54,7 @@ inline bool isInf(const blDataType& number)
 // the sign of a number
 //-------------------------------------------------------------------
 template <typename blDataType>
-inline blDataType sign(blDataType number)
+inline blDataType sign(const blDataType& number)
 {
     return blDataType( (blDataType(0) < number) - (number < blDataType(0)) );
 }
@@ -65,7 +65,27 @@ inline blDataType sign(blDataType number)
 template<typename blDataType>
 inline std::complex<blDataType> sign(const std::complex<blDataType>& number)
 {
-    return blDataType( (blDataType(0) < number.real()) - (number.real() < blDataType(0)) );
+    return std::complex<blDataType>(blDataType( (blDataType(0) < number.real()) - (number.real() < blDataType(0)) ),0);
+}
+//-------------------------------------------------------------------
+
+
+//-------------------------------------------------------------------
+// The following function raises any entity to
+// the power of another entity no matter the type
+// For example a matrix raised to the power of an integer
+// The only requirement is that the multiplication operator
+// be defined for the first entity
+//-------------------------------------------------------------------
+template <typename blDataType>
+inline blDataType power(const blDataType& base,const int& exponent)
+{
+    blDataType result = base;
+
+    for(int i = 1; i < exponent; ++i)
+        result = result*base;
+
+    return result;
 }
 //-------------------------------------------------------------------
 
