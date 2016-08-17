@@ -58,21 +58,21 @@
 //
 // NOTES:
 //-------------------------------------------------------------------
-template<typename blSrcDataIteratorType,
-         typename blDstDataIteratorType>
+template<typename srcDataIteratorType,
+         typename dstDataIteratorType>
 
-inline void blSimpleDownsample(blSrcDataIteratorType SrcDataBegin,
-                               const size_t& SrcDataSize,
-                               blDstDataIteratorType DstDataBegin,
-                               const size_t& DstDataSize)
+inline void simpleDownsample(srcDataIteratorType srcDataBegin,
+                             const size_t& srcDataSize,
+                             dstDataIteratorType dstDataBegin,
+                             const size_t& dstDataSize)
 {
     // First we calculate
     // the downsampling step
 
-    double DownsamplingStep = double(SrcDataSize)/double(DstDataSize);
+    double downsamplingStep = double(srcDataSize)/double(dstDataSize);
 
-    size_t PreviousSourceSamplingIndex = 0;
-    double CurrentSourceSamplingIndex = 0;
+    size_t previousSourceSamplingIndex = 0;
+    double currentSourceSamplingIndex = 0;
 
     // Then we step through
     // source data and pick
@@ -81,31 +81,30 @@ inline void blSimpleDownsample(blSrcDataIteratorType SrcDataBegin,
     // into the destination
     // data set
 
-    for(size_t i = 0; i < DstDataSize; ++i)
+    for(size_t i = 0; i < dstDataSize; ++i)
     {
         // Sample the
         // data point
 
-        (*DstDataBegin) = (*SrcDataBegin);
+        (*dstDataBegin) = (*srcDataBegin);
 
         // Calculate the
         // sampling indices
 
-        CurrentSourceSamplingIndex += DownsamplingStep;
+        currentSourceSamplingIndex += downsamplingStep;
 
         // Advance the
         // iterators
 
-        std::advance(SrcDataBegin,
-                     size_t(CurrentSourceSamplingIndex) - PreviousSourceSamplingIndex);
+        std::advance(srcDataBegin,size_t(currentSourceSamplingIndex) - previousSourceSamplingIndex);
 
-        ++DstDataBegin;
+        ++dstDataBegin;
 
         // Recalculate the
         // previous sampling
         // index
 
-        PreviousSourceSamplingIndex += size_t(CurrentSourceSamplingIndex - double(PreviousSourceSamplingIndex));
+        previousSourceSamplingIndex += size_t(currentSourceSamplingIndex - double(previousSourceSamplingIndex));
     }
 }
 //-------------------------------------------------------------------
