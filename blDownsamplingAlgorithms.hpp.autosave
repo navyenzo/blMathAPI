@@ -166,6 +166,8 @@ inline void largestTriangleThreeBuckets(srcDataIteratorType srcDataBegin,
     // cases out of the way and
     // we've already copied the
     // first and last data points
+    
+    
 }
 //-------------------------------------------------------------------
 
