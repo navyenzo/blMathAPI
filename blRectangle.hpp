@@ -772,7 +772,7 @@ inline blDataType blMap(const blDataType& valueToMap,
 //-------------------------------------------------------------------
 template<typename blDataType>
 inline std::ostream& operator<<(std::ostream& os,
-                                const blRectangle<blDataType>& rectangle)
+                                const blMathAPI::blRectangle<blDataType>& rectangle)
 {
     // We simply output the
     // components with a

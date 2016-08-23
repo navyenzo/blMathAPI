@@ -142,35 +142,67 @@ inline void largestTriangleThreeBuckets(srcDataIteratorType srcDataBegin,
         return;
     }
 
+
+
     // Now we got all the special
     // cases out of the way
-    
-    size_t bucketIndex = 0;
+
+
+
+    // Calculate the size of each bucket
+
     size_t bucketStep = srcDataSize / dstDataSize;
+
+    // Create temporary point values
+    // used to find the point to sample
 
     auto previousBucketPoint = (*srcDataBegin);
     auto nextBucketAvgValue = previousBucketPoint;
+
+    // Temporary variables used to find
+    // the max triangle area formed by
+    // the sampled points
+
     auto maxTriangleArea = previousBucketPoint;
+    auto currentTriangleArea = maxTriangleArea;
 
+    // Iterators used to move through the
+    // source data buckets at a time
 
-    auto srcNextBucketIterator = srcDataBegin;
     auto srcCurrentBucketIterator = srcDataBegin;
 
-    std::advance(srcNextBucketIterator,2*bucketStep);
+    auto srcNextBucketIterator = srcDataBegin;
+    std::advance(srcNextBucketIterator,1 + bucketStep);
+
+    // Value of 2 used to calculate
+    // the triangle area
 
     auto two = static_cast<decltype(previousBucketPoint)>(2);
 
 
 
-    for(size_t bucketIndex = 0; bucketIndex < dstDataSize; bucketIndex += bucketStep)
+    // Let's step through the data and
+    // sample the points of interest
+
+    for(size_t bucketIndex = 0; bucketIndex < dstDataSize; ++bucketIndex)
     {
         // If we are in the first or
         // last buckets then we just
         // copy the first or last data
         // point
 
-        if(bucketIndex == 0 || bucketIndex == (dstDataSize - 1))
+        if(bucketIndex == 0)
+        {
             (*dstDataBegin) = (*srcDataBegin);
+            ++srcCurrentBucketIterator;
+        }
+        else if(bucketIndex == dstDataSize - 1)
+        {
+            std::advance(srcDataBegin,srcDataSize - 1);
+            (*dstDataBegin) = (*srcDataBegin);
+
+            std::cout << "Data begin = " << (*srcDataBegin) << "\n\n\n";
+        }
         else
         {
             // Calculate the average value
@@ -192,18 +224,25 @@ inline void largestTriangleThreeBuckets(srcDataIteratorType srcDataBegin,
             // the point for this current bucket
 
             maxTriangleArea = 0;
+            currentTriangleArea = 0;
 
             for(size_t i = 0; i < bucketStep; ++i)
             {
-                maxTriangleArea = std::max(maxTriangleArea,std::abs( (nextBucketAvgValue - previousBucketPoint) + two*(previousBucketPoint - (*srcCurrentBucketIterator)) ) / two);
+                currentTriangleArea = std::abs( (nextBucketAvgValue - previousBucketPoint) + two*(previousBucketPoint - (*srcCurrentBucketIterator)) ) / two;
 
-                ++srcDataBegin;
+                if(currentTriangleArea > maxTriangleArea)
+                {
+                    maxTriangleArea = currentTriangleArea;
+                    (*dstDataBegin) = (*srcCurrentBucketIterator);
+                }
+
+                ++srcCurrentBucketIterator;
             }
-
-            // Advance to the next destination point
-
-            ++dstDataBegin;
         }
+
+        // Advance to the next destination point
+
+        ++dstDataBegin;
     }
 }
 //-------------------------------------------------------------------
