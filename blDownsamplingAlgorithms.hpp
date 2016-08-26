@@ -200,8 +200,6 @@ inline void largestTriangleThreeBuckets(srcDataIteratorType srcDataBegin,
         {
             std::advance(srcDataBegin,srcDataSize - 1);
             (*dstDataBegin) = (*srcDataBegin);
-
-            std::cout << "Data begin = " << (*srcDataBegin) << "\n\n\n";
         }
         else
         {
