@@ -92,14 +92,20 @@ namespace blMathAPI
 
 
     // A simple 2d point class
+    // and some useful functions
+    // for handling points
 
     #include "blPoint2d.hpp"
+    #include "blPoint2dOperations.hpp"
 
 
 
     // A simple 3d vector class
+    // and some useful functions
+    // for handling vectors
 
     #include "blVector3d.hpp"
+    #include "blVector3dOperations.hpp"
 
 
 
@@ -116,8 +122,11 @@ namespace blMathAPI
 
 
     // A simple quaternion class
+    // and some useful functions
+    // for handling quaternions
 
     #include "blQuaternion.hpp"
+    #include "blQuaternionOperations.hpp"
 
 
 
