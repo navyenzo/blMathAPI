@@ -110,14 +110,20 @@ namespace blMathAPI
 
 
     // A simple 2x2 matrix class
+    // and some useful functions
+    // for handling 2x2 matrices
 
     #include "blMatrix2d.hpp"
+    #include "blMatrix2dOperations.hpp"
 
 
 
     // A simple 3x3 matrix class
+    // and some useful functions
+    // for handling 3x3 matrices
 
     #include "blMatrix3d.hpp"
+    #include "blMatrix3dOperations.hpp"
 
 
 
