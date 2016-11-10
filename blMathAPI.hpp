@@ -137,9 +137,11 @@ namespace blMathAPI
 
 
     // A simple rectangle class
-    // with useful functions
+    // and some useful functions
+    // for handling rectangles
 
     #include "blRectangle.hpp"
+    #include "blRectangleOperations.hpp"
 
 
 
