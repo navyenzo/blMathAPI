@@ -118,16 +118,38 @@ inline void largestTriangleThreeBuckets(srcDataIteratorType srcDataBegin,
     }
     else if(dstDataSize >= srcDataSize)
     {
-        // In this case we simply copy
-        // the source data into the
-        // destination data
+        // In this case we are trying to upsample
+        // the source data, we do this using
+        // a linear sampling
 
-        for(size_t i = 0,j = 0; i < srcDataSize && j < dstDataSize; ++i,++j)
+        double srcStep = double(srcDataSize)/double(dstDataSize);
+
+        int dstIndex = 0;
+
+        int srcIndex = 0;
+        double idealSrcIndex = 0;
+
+        while(srcIndex < srcDataSize && dstIndex < dstDataSize)
         {
+            // Copy the data point
+
             (*dstDataBegin) = (*srcDataBegin);
 
-            ++srcDataBegin;
+            // Move forward in the destination array
+
             ++dstDataBegin;
+
+            // Calculate how much to move forward
+            // in the source array
+
+            idealSrcIndex += srcStep;
+
+            if(int(idealSrcIndex) > srcIndex)
+            {
+                srcIndex = int(idealSrcIndex);
+
+                ++srcDataBegin;
+            }
         }
 
         return;
@@ -275,20 +297,41 @@ inline void largestTriangleThreeBuckets(xSrcDataIteratorType xSrcDataBegin,
     }
     else if(dstDataSize >= srcDataSize)
     {
-        // In this case we simply copy
-        // the source data into the
-        // destination data
+        // In this case we are trying to upsample
+        // the source data, we do this using
+        // a linear sampling
 
-        for(size_t i = 0,j = 0; i < srcDataSize && j < dstDataSize; ++i,++j)
+        double srcStep = double(srcDataSize)/double(dstDataSize);
+
+        int dstIndex = 0;
+
+        int srcIndex = 0;
+        double idealSrcIndex = 0;
+
+        while(srcIndex < srcDataSize && dstIndex < dstDataSize)
         {
+            // Copy the data point
+
             (*xDstDataBegin) = (*xSrcDataBegin);
             (*yDstDataBegin) = (*ySrcDataBegin);
 
-            ++xSrcDataBegin;
-            ++ySrcDataBegin;
+            // Move forward in the destination array
 
             ++xDstDataBegin;
             ++yDstDataBegin;
+
+            // Calculate how much to move forward
+            // in the source array
+
+            idealSrcIndex += srcStep;
+
+            if(int(idealSrcIndex) > srcIndex)
+            {
+                srcIndex = int(idealSrcIndex);
+
+                ++xSrcDataBegin;
+                ++ySrcDataBegin;
+            }
         }
 
         return;

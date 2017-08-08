@@ -46,6 +46,8 @@ template<typename blIntegerType>
 
 inline int countIntToStringLength(blIntegerType number)
 {
+    int count = 0;
+
     if(number < 0)
     {
         // In this case, we
@@ -55,13 +57,11 @@ inline int countIntToStringLength(blIntegerType number)
         // one needed for the
         // negative sign
 
-        return ( countIntToStringLength(-number) + 1 );
+        ++count;
     }
 
     if(number < 10)
-        return 1;
-
-    int count = 0;
+        return 1 + count;
 
     while(number > 0)
     {
