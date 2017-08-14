@@ -629,6 +629,36 @@ inline blStringIteratorType floatingPointToStringUsingScientificNotation(blFloat
 
 
 //-------------------------------------------------------------------
+// Functions used to test whether a character
+// is purely numeric, or numeric plus some accepted
+// characters in a number such as the decimal point,
+// plus sign, minus sign, exponent etc.
+//-------------------------------------------------------------------
+template<typename blCharacterType>
+
+inline bool isCharNumeric(const blCharacterType& character)
+{
+    return (character >= '0' && character <= '9');
+}
+
+
+
+template<typename blCharacterType>
+
+inline bool isCharNumericPlus(const blCharacterType& character)
+{
+    return ( (character >= '0' && character <= '9')
+             || character == '-'
+             || character == '+'
+             || character == 'e'
+             || character == 'E'
+             || character == '.');
+}
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
 // FUNCTION:            convertStringToNumber
 //
 // ARGUMENTS:           - BeginIter
@@ -958,6 +988,236 @@ inline blStringIteratorType convertStringToNumber(const blStringIteratorType& be
     return currentPos;
 }
 //-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// The following functor can be used as an iterator
+// to iterate over a string as if it's an (nx1) column vector
+// of numbers and when dereferenced it returns the
+// number's value
+//-------------------------------------------------------------------
+template<typename blDataIteratorType,
+         typename blNumberType>
+
+class blStringColumnVectorIterator
+{
+public:
+
+    // Iterator traits
+
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = blNumberType;
+    using difference_type = ptrdiff_t;
+    using pointer = blNumberType*;
+    using reference = blNumberType&;
+
+
+
+    blStringColumnVectorIterator(const blDataIteratorType& beginIter,
+                                 const blDataIteratorType& endIter)
+    {
+        setIterators(beginIter,endIter);
+    }
+
+
+
+    blStringColumnVectorIterator(const blStringColumnVectorIterator<blDataIteratorType,blNumberType>& stringColumnVectorIterator) = default;
+
+
+
+    ~blStringColumnVectorIterator()
+    {
+    }
+
+
+
+    blStringColumnVectorIterator<blDataIteratorType,blNumberType>&      operator=(const blStringColumnVectorIterator<blDataIteratorType,blNumberType>& stringColumnVectorIterator) = default;
+
+
+
+    bool                            operator==(const blStringColumnVectorIterator<blDataIteratorType,blNumberType>& stringColumnVectorIterator)const
+    {
+        return (m_iter == stringColumnVectorIterator.getIter());
+    }
+
+    bool                            operator!=(const blStringColumnVectorIterator<blDataIteratorType,blNumberType>& stringColumnVectorIterator)const
+    {
+        return (m_iter != stringColumnVectorIterator.getIter());
+    }
+
+
+
+    blNumberType*                   operator->()
+    {
+        return &m_number;
+    }
+
+    blNumberType&                   operator*()
+    {
+        return m_number;
+    }
+
+    const blNumberType&             operator*()const
+    {
+        return m_number;
+    }
+
+    blStringColumnVectorIterator<blDataIteratorType,blNumberType>&      operator+=(const ptrdiff_t& movement)
+    {
+        if(movement > 0)
+        {
+            m_row += findBeginningOfNthDataRow(m_iter,m_endIter,'\n',false,movement,m_iter);
+
+            convertToNumber();
+        }
+        else if(movement < 0)
+        {
+            m_row = findBeginningOfNthDataRow(m_beginIter,m_endIter,'\n',false,-movement,m_iter);
+
+            convertToNumber();
+        }
+
+        return (*this);
+    }
+
+    blStringColumnVectorIterator<blDataIteratorType,blNumberType>&      operator-=(const ptrdiff_t& movement)
+    {
+        if(movement < 0)
+        {
+            m_row += findBeginningOfNthDataRow(m_iter,m_endIter,'\n',false,movement,m_iter);
+
+            convertToNumber();
+        }
+        else if(movement > 0)
+        {
+            m_row = findBeginningOfNthDataRow(m_beginIter,m_endIter,'\n',false,-movement,m_iter);
+
+            convertToNumber();
+        }
+
+        return (*this);
+    }
+
+    blStringColumnVectorIterator<blDataIteratorType,blNumberType>&      operator++()
+    {
+        m_row += findBeginningOfNthDataRow(m_iter,m_endIter,'\n',false,1,m_iter);
+
+        convertToNumber();
+
+        return (*this);
+    }
+
+    blStringColumnVectorIterator<blDataIteratorType,blNumberType>&      operator--()
+    {
+        if(m_row > 0)
+            m_row = findBeginningOfNthDataRow(m_iter,m_endIter,'\n',false,m_row - 1,m_iter);
+
+        convertToNumber();
+
+        return (*this);
+    }
+
+    blStringColumnVectorIterator<blDataIteratorType,blNumberType>      operator++(int)
+    {
+        auto temp(*this);
+
+        m_row += findBeginningOfNthDataRow(m_iter,m_endIter,'\n',false,1,m_iter);
+
+        convertToNumber();
+
+        return temp;
+    }
+
+    blStringColumnVectorIterator<blDataIteratorType,blNumberType>      operator--(int)
+    {
+        auto temp(*this);
+
+        if(m_row > 0)
+        {
+            m_row = findBeginningOfNthDataRow(m_iter,m_endIter,'\n',false,m_row - 1,m_iter);
+
+            convertToNumber();
+        }
+
+        return temp;
+    }
+
+    blStringColumnVectorIterator<blDataIteratorType,blNumberType>      operator+(const ptrdiff_t& movement)const
+    {
+        auto temp(*this);
+
+        temp += movement;
+
+        return temp;
+    }
+
+    blStringColumnVectorIterator<blDataIteratorType,blNumberType>      operator-(const ptrdiff_t& movement)const
+    {
+        auto temp(*this);
+
+        temp -= movement;
+
+        return temp;
+    }
+
+
+
+    // Operator used to "subtract"
+    // two pointers (it gives the
+    // distance)
+
+    ptrdiff_t                       operator-(const blStringColumnVectorIterator<blDataIteratorType,blNumberType>& stringColumnVectorIterator)const
+    {
+        return ( m_row - stringColumnVectorIterator.getRow() );
+    }
+
+
+
+    void                            setIterators(const blDataIteratorType& beginIter,
+                                                 const blDataIteratorType& endIter)
+    {
+        m_beginIter = beginIter;
+        m_endIter = endIter;
+        m_iter = m_beginIter;
+
+        m_number = 0;
+
+        m_row = 0;
+
+        convertToNumber();
+    }
+
+
+
+    const int&                      getRow()const
+    {
+        return m_row;
+    }
+
+
+
+private:
+
+    void                            convertToNumber()
+    {
+        convertStringToNumber(m_iter,m_endIter,'.',m_number,0);
+    }
+
+
+
+private:
+
+    blDataIteratorType      m_beginIter;
+    blDataIteratorType      m_endIter;
+    blDataIteratorType      m_iter;
+
+    blNumberType            m_number;
+
+    int                     m_row;
+};
+//-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------

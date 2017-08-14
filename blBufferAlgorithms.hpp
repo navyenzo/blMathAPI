@@ -1180,6 +1180,98 @@ inline void getRowAndColNumberOfPositionInDataBuffer(const blDataIteratorType& b
 // beginning of the user specified nth row.
 // The function returns the "actual" row found
 // in case that there are less than "n" rows.
+//-------------------------------------------------------------------
+template<typename blDataIteratorType,
+         typename blTokenType,
+         typename blIntegerType>
+
+inline blIntegerType findBeginningOfNthDataRow(const blDataIteratorType& beginIter,
+                                               const blDataIteratorType& endIter,
+                                               const blTokenType& rowToken,
+                                               const bool& shouldZeroLengthRowsBeCounted,
+                                               const blIntegerType& whichRowToFind,
+                                               blDataIteratorType& nthRowBeginIter)
+{
+    // Check the inputs
+
+    if(beginIter == endIter)
+    {
+        // In this case
+        // we have no
+        // data to look
+        // through
+
+        nthRowBeginIter = beginIter;
+
+        return blIntegerType(0);
+    }
+
+    // The iterator
+    // to the tokens
+    // found in the data
+
+    blDataIteratorType firstTokenIterator = beginIter;
+    blDataIteratorType secondTokenIterator = beginIter;
+
+    nthRowBeginIter = firstTokenIterator;
+
+    // The current
+    // data row
+
+    blIntegerType currentRow = blIntegerType(-1);
+
+    while(firstTokenIterator != endIter &&
+          currentRow < whichRowToFind)
+    {
+        // Find the next
+        // token in the
+        // data
+
+        secondTokenIterator = find(firstTokenIterator,
+                                   endIter,
+                                   rowToken,
+                                   0);
+
+        if(secondTokenIterator == firstTokenIterator &&
+           !shouldZeroLengthRowsBeCounted)
+        {
+            // In this case,
+            // the row is of
+            // zero length and
+            // we don't count it
+
+            ++firstTokenIterator;
+        }
+        else
+        {
+            ++currentRow;
+
+            nthRowBeginIter = firstTokenIterator;
+
+            firstTokenIterator = secondTokenIterator;
+
+            // If we have not
+            // reached the end,
+            // then we advance
+            // the iterator
+
+            if(firstTokenIterator != endIter)
+                ++firstTokenIterator;
+        }
+    }
+
+    // We're done
+
+    return currentRow;
+}
+//-------------------------------------------------------------------
+
+
+//-------------------------------------------------------------------
+// This function gets an iterator to the
+// beginning of the user specified nth row.
+// The function returns the "actual" row found
+// in case that there are less than "n" rows.
 // The function allows the user to specify
 // whether or not to count zero sized rows.
 //-------------------------------------------------------------------
@@ -1528,6 +1620,7 @@ inline blIntegerType findPositionOfNthDataRowAndMthDataColInString(const std::st
                                                  actualColFound);
 }
 //-------------------------------------------------------------------
+
 
 
 #endif // BL_BUFFERALGORITHMS_HPP
