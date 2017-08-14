@@ -993,8 +993,9 @@ inline blStringIteratorType convertStringToNumber(const blStringIteratorType& be
 
 //-------------------------------------------------------------------
 // The following functor can be used as an iterator
-// to iterate over a string as if it's an (nx1) column vector
-// of numbers and when dereferenced it returns the
+// to iterate over a string assuming the string
+// buffer reppresents an (nx1) column vector of
+// numbers and when dereferenced it, it returns the
 // number's value
 //-------------------------------------------------------------------
 template<typename blDataIteratorType,
@@ -1067,13 +1068,28 @@ public:
     {
         if(movement > 0)
         {
-            m_row += findBeginningOfNthDataRow(m_iter,m_endIter,'\n',false,movement,m_iter);
+            int actualMovement = findBeginningOfNthDataRow(m_iter,m_endIter,'\n',false,movement,m_iter);
+
+            if(actualMovement < movement)
+                m_iter = m_endIter;
+
+            m_row += actualMovement;
 
             convertToNumber();
         }
         else if(movement < 0)
         {
-            m_row = findBeginningOfNthDataRow(m_beginIter,m_endIter,'\n',false,-movement,m_iter);
+            int newRowToFind = m_row + movement;
+
+            if(newRowToFind < 0)
+            {
+                m_row = 0;
+                m_iter = m_beginIter;
+            }
+            else
+            {
+                m_row = findBeginningOfNthDataRow(m_beginIter,m_endIter,'\n',false,newRowToFind,m_iter);
+            }
 
             convertToNumber();
         }
@@ -1083,48 +1099,24 @@ public:
 
     blStringColumnVectorIterator<blDataIteratorType,blNumberType>&      operator-=(const ptrdiff_t& movement)
     {
-        if(movement < 0)
-        {
-            m_row += findBeginningOfNthDataRow(m_iter,m_endIter,'\n',false,movement,m_iter);
-
-            convertToNumber();
-        }
-        else if(movement > 0)
-        {
-            m_row = findBeginningOfNthDataRow(m_beginIter,m_endIter,'\n',false,-movement,m_iter);
-
-            convertToNumber();
-        }
-
-        return (*this);
+        return this->operator+=(-movement);
     }
 
     blStringColumnVectorIterator<blDataIteratorType,blNumberType>&      operator++()
     {
-        m_row += findBeginningOfNthDataRow(m_iter,m_endIter,'\n',false,1,m_iter);
-
-        convertToNumber();
-
-        return (*this);
+        return operator+=(1);
     }
 
     blStringColumnVectorIterator<blDataIteratorType,blNumberType>&      operator--()
     {
-        if(m_row > 0)
-            m_row = findBeginningOfNthDataRow(m_iter,m_endIter,'\n',false,m_row - 1,m_iter);
-
-        convertToNumber();
-
-        return (*this);
+        return operator+=(-1);
     }
 
     blStringColumnVectorIterator<blDataIteratorType,blNumberType>      operator++(int)
     {
         auto temp(*this);
 
-        m_row += findBeginningOfNthDataRow(m_iter,m_endIter,'\n',false,1,m_iter);
-
-        convertToNumber();
+        operator+=(1);
 
         return temp;
     }
@@ -1133,12 +1125,7 @@ public:
     {
         auto temp(*this);
 
-        if(m_row > 0)
-        {
-            m_row = findBeginningOfNthDataRow(m_iter,m_endIter,'\n',false,m_row - 1,m_iter);
-
-            convertToNumber();
-        }
+        operator+=(-1);
 
         return temp;
     }
@@ -1169,7 +1156,7 @@ public:
 
     ptrdiff_t                       operator-(const blStringColumnVectorIterator<blDataIteratorType,blNumberType>& stringColumnVectorIterator)const
     {
-        return ( m_row - stringColumnVectorIterator.getRow() );
+        return (m_iter - stringColumnVectorIterator.getIter());
     }
 
 
@@ -1197,6 +1184,34 @@ public:
 
 
 
+    const blDataIteratorType&       getBeginIter()const
+    {
+        return m_beginIter;
+    }
+
+
+
+    const blDataIteratorType&       getEndIter()const
+    {
+        return m_endIter;
+    }
+
+
+
+    const blDataIteratorType&       getIter()const
+    {
+        return m_iter;
+    }
+
+
+
+    const blNumberType&             getNumber()const
+    {
+        return m_number;
+    }
+
+
+
 private:
 
     void                            convertToNumber()
@@ -1208,11 +1223,33 @@ private:
 
 private:
 
+    // Begin and end iterators
+    // used to know where the
+    // given buffer begins and
+    // ends
+
     blDataIteratorType      m_beginIter;
     blDataIteratorType      m_endIter;
+
+
+
+    // The iterator used to move through
+    // the buffer
+
     blDataIteratorType      m_iter;
 
+
+
+    // The converted number of where the
+    // iterator is currently pointing at
+    // in the buffer
+
     blNumberType            m_number;
+
+
+
+    //  Current row in the buffer assuming
+    // the buffer is a column vector
 
     int                     m_row;
 };
