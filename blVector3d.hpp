@@ -94,7 +94,7 @@ public: // Overloaded operators
 
     // Dot product
 
-    const blDataType                operator*(const blVector3d<blDataType>& vector)const;
+    blDataType                      operator*(const blVector3d<blDataType>& vector)const;
 
 public: // Public functions
 
@@ -394,7 +394,7 @@ inline const blVector3d<blDataType> blVector3d<blDataType>::operator-(const blVe
 
 //-------------------------------------------------------------------
 template<typename blDataType>
-inline const blDataType blVector3d<blDataType>::operator*(const blVector3d<blDataType>& vector)const
+inline blDataType blVector3d<blDataType>::operator*(const blVector3d<blDataType>& vector)const
 {
     return (m_x * vector.x() + m_y * vector.y() + m_z * vector.z());
 }

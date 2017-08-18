@@ -265,8 +265,8 @@ inline void quaternionToAxisAngle(const blQuaternion<blDataType>& qtn,
 // a quaternion
 //-------------------------------------------------------------------
 template<typename blDataType>
-inline blVector3d<blDataType> rotateVector(const blQuaternion<blDataType>& rotQtn,
-                                           const blVector3d<blDataType>& vectorToRotate)
+inline blVector3d<blDataType>& rotateVector(const blQuaternion<blDataType>& rotQtn,
+                                           blVector3d<blDataType>& vectorToRotate)
 {
     blQuaternion<blDataType> vectorQtn(0,vectorToRotate);
 
@@ -274,7 +274,9 @@ inline blVector3d<blDataType> rotateVector(const blQuaternion<blDataType>& rotQt
 
     auto unitRotatedVector = getNormalized( ( rotQtn * vectorQtn * rotQtnConj).xyz() );
 
-    return ( norm2(vectorToRotate) * unitRotatedVector );
+    vectorToRotate = ( norm2(vectorToRotate) * unitRotatedVector );
+
+    return vectorToRotate;
 }
 //-------------------------------------------------------------------
 
