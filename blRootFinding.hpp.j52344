@@ -1,0 +1,337 @@
+#ifndef BL_ROOTFINDING_HPP
+#define BL_ROOTFINDING_HPP
+
+
+
+//-------------------------------------------------------------------
+// FILE:            blRootFinding.hpp
+// CLASS:           None
+// BASE CLASS:      None
+//
+// PURPOSE:         A collection of root finding
+//                  methods to solve equations of
+//                  the type:  f(x) = 0
+//
+// AUTHOR:          Vincenzo Barbato
+//                  http://www.barbatolabs.com
+//                  navyenzo@gmail.com
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// This function implement the Bisection Method
+//-------------------------------------------------------------------
+template<typename blDataType,
+         typename blFunctorType>
+
+inline blDataType bisectionMethod(blDataType a,
+                                  blDataType b,
+                                  const blFunctorType& functor,
+                                  const blDataType& TOL,
+                                  const int& maxIterations)
+{
+    if(a == b)
+    {
+        return a;
+    }
+
+    auto Fa = functor(a);
+    auto Fb = functor(b);
+
+    if(Fa == 0)
+        return a;
+    else if(Fb == 0)
+        return b;
+    else if(Fa * Fb > 0)
+    {
+        return Fa;
+    }
+
+    if(Fa * Fb >= 0))
+    {
+        if(Fa > 0)
+        if(Fa <= Fb)
+            return a;
+        else
+            return b;
+    }
+
+    blDataType c = a;
+    auto Fc = Fa;
+
+    blDataType c_old;
+    blDataType errorValue;
+
+    int iterations = 0;
+
+    do
+    {
+        c_old = c;
+
+        c = (a + b) / blDataType(2);
+
+        Fc = functor(c);
+
+        if(sign(Fc) == sign(Fa))
+            a = c;
+        else
+            b = c;
+
+        errorValue = sign(c - c_old) * (c - c_old) / c;
+
+        ++iterations;
+    }
+    while((iterations < maxIterations) &&
+          (Fc != returnType(0)) &&
+          (errorValue > TOL));
+
+    return c;
+}
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// This function implements the False Position Method
+//-------------------------------------------------------------------
+template<typename blDataType,
+         typename blFunctorType>
+
+inline blDataType falsePositionMethod(blDataType a,
+                                      blDataType b,
+                                      const blFunctorType& functor,
+                                      const blDataType& TOL,
+                                      const int& maxIterations)
+{
+    if(a == b)
+    {
+        return a;
+    }
+
+    auto Fa = functor(a);
+    auto Fb = functor(b);
+
+    if(sign(Fa) == sign(Fb))
+    {
+        if(Fa <= Fb)
+            return a;
+        else
+            return b;
+    }
+
+    blDataType c = a;
+    auto Fc = Fa;
+
+    blDataType c_old;
+    blDataType errorValue;
+
+    int iterations = 0;
+
+    do
+    {
+        c_old = c;
+
+        c = c = (Fb*a - Fa*b) / (Fb - Fa);
+
+        Fc = functor(c);
+
+        if(sign(Fc) == sign(Fa))
+        {
+            a = c;
+            Fa = functor(a);
+        }
+        else
+        {
+            b = c;
+            Fb = functor(b);
+        }
+
+        errorValue = sign(c - c_old) * (c - c_old) / c;
+
+        ++iterations;
+    }
+    while((iterations < maxIterations) &&
+          (Fc != returnType(0)) &&
+          (errorValue > TOL));
+
+    return c;
+}
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// This function implements a single step in the
+// Inverse Quadratic Interpolation Method
+//-------------------------------------------------------------------
+template<typename blDataType>
+
+inline blDataType inverseQuadraticInterpolationStep(blDataType x0,
+                                                    blDataType x1,
+                                                    blDataType x2,
+                                                    blDataType f_x0,
+                                                    blDataType f_x1,
+                                                    blDataType f_x2)
+{
+    return (
+             x0 * (f_x1 * f_x2) / ((f_x0 - f_x1)*(f_x0 - f_x2)) +
+             x1 * (f_x0 * f_x2) / ((f_x1 - f_x0)*(f_x1 - f_x2)) +
+             x2 * (f_x0 * f_x1) / ((f_x2 - f_x0)*(f_x2 - f_x1))
+           );
+}
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// This function implements the Newton Raphson Method
+//-------------------------------------------------------------------
+template<typename blDataType,
+         typename blFunctorType,
+         typename blFunctorDerivativeType>
+
+inline blDataType newtonRaphsonMethod(blDataType xi,
+                                      const blFunctorType& functor,
+                                      const blFunctorDerivativeType& functorDerivative,
+                                      const blDataType& TOL,
+                                      const int& maxIterations)
+{
+    // The evaluated
+    // function and
+    // function
+    // derivative
+
+    blDataType F = functor(xi);
+    blDataType Fd = functorDerivative(xi);
+
+    // The new root
+    // value
+
+    blDataType xi_new = xi - F/Fd;
+
+    // The error
+    // variable
+
+    blDataType errorValue = (sign(xi_new - xi)*(xi_new - xi) / xi_new);
+
+    // The current number
+    // of iterations while
+    // we're solving for
+    // the root
+
+    int iterations = 0;
+
+    while((iterations < maxIterations) &&
+          (sign(F)*F > TOL) &&
+          (errorValue > TOL))
+    {
+        // Store the newly
+        // found root value
+
+        xi = xi_new;
+
+        // Calculate the
+        // new root and
+        // the functor
+        // value at the
+        // new root
+
+        F = functor(xi);
+        Fd = functorDerivative(xi);
+
+        xi_new = xi - F/Fd;
+
+        // Calculate the
+        // error for the
+        // newly calculated
+        // root value
+
+        errorValue = (sign(xi_new - xi)*(xi_new - xi) / xi_new);
+
+        ++iterations;
+    }
+
+    return xi_new;
+}
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// This function implements Brent's Method
+//-------------------------------------------------------------------
+template<typename blDataType,
+         typename blFunctorType,
+         typename blFunctorDerivativeType>
+
+inline blDataType brentsMethod(blDataType a,
+                               blDataType b,
+                               const blFunctorType& functor,
+                               const blDataType& TOL,
+                               const int& maxIterations)
+{
+    // First we evaluate the function
+    // at the specified bounds
+
+    auto fa = functor(a);
+    auto fb = functor(b);
+
+
+
+    // We then make sure that a root
+    // lies within the specified bounds
+
+    if(sign(Fa) == sign(Fb))
+    {
+        if(Fa <= Fb)
+            return a;
+        else
+            return b;
+    }
+
+
+
+
+
+    input a, b, and (a pointer to) a function for f
+    calculate f(a)
+    calculate f(b)
+    if f(a)f(b) ≥ 0 then exit function because the root is not bracketed.
+    if |f(a)| < |f(b)| then swap (a,b) end if
+    c := a
+    set mflag
+    repeat until f(b or s) = 0 or |b − a| is small enough (convergence)
+      if f(a) ≠ f(c) and f(b) ≠ f(c) then
+        {\displaystyle s:={\frac {af(b)f(c)}{(f(a)-f(b))(f(a)-f(c))}}+{\frac {bf(a)f(c)}{(f(b)-f(a))(f(b)-f(c))}}+{\frac {cf(a)f(b)}{(f(c)-f(a))(f(c)-f(b))}}} s:={\frac {af(b)f(c)}{(f(a)-f(b))(f(a)-f(c))}}+{\frac {bf(a)f(c)}{(f(b)-f(a))(f(b)-f(c))}}+{\frac {cf(a)f(b)}{(f(c)-f(a))(f(c)-f(b))}} (inverse quadratic interpolation)
+      else
+        {\displaystyle s:=b-f(b){\frac {b-a}{f(b)-f(a)}}} s:=b-f(b){\frac {b-a}{f(b)-f(a)}} (secant method)
+      end if
+      if (condition 1) s is not between {\displaystyle {\frac {3a+b}{4}}} {\frac {3a+b}{4}} and b or
+         (condition 2) (mflag is set and |s−b| ≥ |b−c|/2) or
+         (condition 3) (mflag is cleared and |s−b| ≥ |c−d|/2) or
+         (condition 4) (mflag is set and |b−c| < |δ|) or
+         (condition 5) (mflag is cleared and |c−d| < |δ|)
+      then
+        {\displaystyle s:={\frac {a+b}{2}}} s:={\frac {a+b}{2}} (bisection method)
+        set mflag
+      else
+        clear mflag
+      end if
+      calculate f(s)
+      d := c  (d is assigned for the first time here; it won't be used above on the first iteration because mflag is set)
+      c := b
+      if f(a)f(s) < 0 then b := s else a := s end if
+      if |f(a)| < |f(b)| then swap (a,b) end if
+    end repeat
+    output b or s (return the root)
+
+
+
+
+}
+//-------------------------------------------------------------------
+
+
+
+#endif // BL_ROOTFINDING_HPP

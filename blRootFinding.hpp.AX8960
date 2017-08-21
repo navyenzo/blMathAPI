@@ -262,6 +262,9 @@ inline blDataType bracketedMethod(blDataType a,
 
     // We return the found root
 
+
+    std::cout << "\n\niterations = " << iterations << ", Fc = " << Fc << ", errorValue = " << errorValue << "\n\n" << std::endl;
+
     return c;
 }
 //-------------------------------------------------------------------
@@ -442,8 +445,8 @@ inline blDataType brentsMethod(blDataType a,
            s > lim2 ||
            (mFlag == true && absSminusB >= absBminusC/two) ||
            (mFlag == false && absSminusB >= absCminusD/two) ||
-           (mFlag == true && absBminusC < convergenceTolerance) ||
-           (mFlag == false && absCminusD < convergenceTolerance))
+           (mFlag == true && absBminusC < absD) ||
+           (mFlag == false && absCminusD < absD))
         {
             bisectionStep(a,b,s);
             mFlag = true;
@@ -497,7 +500,208 @@ inline blDataType brentsMethod(blDataType a,
 
     // We return the found root
 
+
+    std::cout << "\n\ncount = " << count << ", iterations = " << iterations << ", Fs = " << Fs << ", abs(Fs) = " << std::abs(Fs) << ", convergenceTolerance = " << convergenceTolerance << ", abs(a-b) = " << absAminusB << "\n\n" << std::endl;
+
+
+
+    // We return the found root
+
     return s;
+}
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// This function implement the Bisection Method
+//-------------------------------------------------------------------
+template<typename blDataType,
+         typename blFunctorType>
+
+inline blDataType bisectionMethod(blDataType a,
+                                  blDataType b,
+                                  const blFunctorType& functor,
+                                  const blDataType& TOL,
+                                  const int& maxIterations)
+{
+    // First we check for the specified
+    // bounds being the same
+
+    if(a == b)
+    {
+        return a;
+    }
+
+
+
+    // Here we evaluate the function at
+    // the specified bounds
+
+    auto Fa = functor(a);
+    auto Fb = functor(b);
+
+
+
+    // The return type of the functor
+
+    typedef decltype(Fa) blFunctorReturnType;
+
+
+
+    // Now we check if there is a root
+    // between the specified bounds
+    // including the bounds themselves
+
+    if(Fa == 0)
+        return a;
+    else if(Fb == 0)
+        return b;
+    else if(Fa * Fb > 0)
+    {
+        return Fa;
+    }
+
+
+
+    // Now we move on with the bisection method
+
+    blDataType c = a;
+    auto Fc = Fa;
+
+    blDataType c_old;
+    blDataType errorValue;
+
+    int iterations = 0;
+
+    do
+    {
+        c_old = c;
+
+        c = (a + b) / blDataType(2);
+
+        Fc = functor(c);
+
+        if(sign(Fc) == sign(Fa))
+            a = c;
+        else
+            b = c;
+
+        errorValue = sign(c - c_old) * (c - c_old) / c;
+
+        ++iterations;
+    }
+    while((iterations < maxIterations) &&
+          (Fc != blFunctorReturnType(0)) &&
+          (errorValue > TOL));
+
+
+
+    // We return the found root
+
+    return c;
+}
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// This function implements the False Position Method
+//-------------------------------------------------------------------
+template<typename blDataType,
+         typename blFunctorType>
+
+inline blDataType falsePositionMethod(blDataType a,
+                                      blDataType b,
+                                      const blFunctorType& functor,
+                                      const blDataType& TOL,
+                                      const int& maxIterations)
+{
+    // First we check for the specified
+    // bounds being the same
+
+    if(a == b)
+    {
+        return a;
+    }
+
+
+
+    // Here we evaluate the function at
+    // the specified bounds
+
+    auto Fa = functor(a);
+    auto Fb = functor(b);
+
+
+
+    // The return type of the functor
+
+    typedef decltype(Fa) blFunctorReturnType;
+
+
+
+    // Now we check if there is a root
+    // between the specified bounds
+    // including the bounds themselves
+
+    if(Fa == 0)
+        return a;
+    else if(Fb == 0)
+        return b;
+    else if(Fa * Fb > 0)
+    {
+        return Fa;
+    }
+    if(a == b)
+    {
+        return a;
+    }
+
+
+
+    // Now we move on with the false position method
+
+    blDataType c = a;
+    auto Fc = Fa;
+
+    blDataType c_old;
+    blDataType errorValue;
+
+    int iterations = 0;
+
+    do
+    {
+        c_old = c;
+
+        c = c = (Fb*a - Fa*b) / (Fb - Fa);
+
+        Fc = functor(c);
+
+        if(sign(Fc) == sign(Fa))
+        {
+            a = c;
+            Fa = functor(a);
+        }
+        else
+        {
+            b = c;
+            Fb = functor(b);
+        }
+
+        errorValue = sign(c - c_old) * (c - c_old) / c;
+
+        ++iterations;
+    }
+    while((iterations < maxIterations) &&
+          (Fc != blFunctorReturnType(0)) &&
+          (errorValue > TOL));
+
+
+
+    // We return the found root
+
+    return c;
 }
 //-------------------------------------------------------------------
 

@@ -177,12 +177,19 @@ inline blDataType bracketedMethod(blDataType a,
     blDataType c = a;
     auto Fc = Fa;
 
+    blDataType c_old;
     blDataType errorValue;
 
     int iterations = 0;
 
     do
     {
+        // Store the previous guess
+
+        c_old = c;
+
+
+
         // Find the next guess calling the
         // specified bracketed method
 
@@ -246,7 +253,7 @@ inline blDataType bracketedMethod(blDataType a,
 
         // Calculate the convergence error
 
-        errorValue = std::abs(a - b);
+        errorValue = sign(c - c_old) * (c - c_old) / c;
 
 
 
@@ -262,6 +269,9 @@ inline blDataType bracketedMethod(blDataType a,
 
     // We return the found root
 
+
+    std::cout << "\n\niterations = " << iterations << ", Fc = " << Fc << ", errorValue = " << errorValue << "\n\n" << std::endl;
+
     return c;
 }
 //-------------------------------------------------------------------
@@ -272,12 +282,13 @@ inline blDataType bracketedMethod(blDataType a,
 // This function implements Brent's Method
 //-------------------------------------------------------------------
 template<typename blDataType,
-         typename blFunctorType>
+         typename blFunctorType,
+         typename blFunctorDerivativeType>
 
 inline blDataType brentsMethod(blDataType a,
                                blDataType b,
                                const blFunctorType& functor,
-                               const blDataType& convergenceTolerance,
+                               const blDataType& TOL,
                                const int& maxIterations)
 {
     // First we check for the specified
@@ -330,12 +341,6 @@ inline blDataType brentsMethod(blDataType a,
     typedef decltype(Fa) blFunctorReturnType;
 
 
-
-    // Define the zero value
-
-    blFunctorReturnType zero = blFunctorReturnType(0);
-
-
     // Flag used to signal whether the bisection
     // method was used last iteration step to
     // find the root
@@ -348,54 +353,35 @@ inline blDataType brentsMethod(blDataType a,
     // necessary to invoke the bisection
     // method
 
+    blDataType lim1,lim2;
 
 
-    // Intermedial variables used
-    // throughout the method
 
-    blDataType lim1 = a;
-    blDataType lim2 = a;
+    // Initialize the variables needed for the method
 
     blDataType c = a;
-    blDataType s = a;
-    blDataType d = a;
-
     auto Fc = Fa;
-    auto Fs = Fa;
 
-    blDataType absBminusA = std::abs(b - a);
-    blDataType absBminusC = std::abs(b - c);
-    blDataType absCminusD = std::abs(c - d);
-    blDataType absD = std::abs(d);
-    blDataType absSminusB = std::abs(s - b);
-
-    auto two = blDataType(2);
-    auto three = blDataType(3);
-    auto four = blDataType(4);
-
-
-
-
-
-    // The current number of iterations
+    blDataType c_old;
+    blDataType errorValue;
 
     int iterations = 0;
 
-    int count = 0;
-
-
-
-    while(std::abs(Fs) > zero &&
-          absBminusA > convergenceTolerance &&
-          iterations < maxIterations)
+    do
     {
+        // Store the previous guess
+
+        c_old = c;
+
+
+
         if(Fc != Fa && Fc != Fb)
         {
             // In this case we invoke the
             // inverse quadratic interpolation
             // step to find the new root
 
-            inverseQuadraticInterpolationStep(a,b,c,Fa,Fb,Fc,s);
+            inverseQuadraticInterpolationStep(a,b,c,Fa,Fb,Fc,c);
         }
         else
         {
@@ -403,7 +389,7 @@ inline blDataType brentsMethod(blDataType a,
             // secand step to find the new
             // root
 
-            secantStep(a,b,Fa,Fb,s);
+            secantStep(a,b,Fa,Fb,c);
         }
 
 
@@ -413,78 +399,74 @@ inline blDataType brentsMethod(blDataType a,
         // we invoke the bisection method
         // to better approximate the new root
 
-        if(a < b)
+        if(c )
+
+
+
+        // Find the next guess calling the
+        // specified bracketed method
+
+        switch(method)
         {
-            lim1 = (three * a + b)/four;
-            lim2 = b;
+        case BL_BISECTION_METHOD:
+
+            bisectionStep(a,b,c);
+
+            break;
+
+        case BL_FALSE_POSITION_METHOD:
+
+            falsePositionStep(a,b,Fa,Fb,c);
+
+            break;
+
+        case BL_INVERSE_QUADRATIC_INTERPOLATION_METHOD:
+
+            // For this case we need 3 distinct
+            // initial guesses
+
+            if(Fa != Fc && Fb != Fc)
+                inverseQuadraticInterpolationStep(a,b,c,Fa,Fb,Fc,c);
+            else
+                secantStep(a,b,Fa,Fb,c);
+
+            break;
+
+        case BL_SECANT_METHOD:
+        default:
+
+            secantStep(a,b,Fa,Fb,c);
+
+            break;
+        }
+
+
+
+        // Evaluate the function at the
+        // newly found guess
+
+        Fc = functor(c);
+
+
+
+        // Assign the new bounds
+
+        if(Fc * Fa > 0)
+        {
+            a = c;
+            Fa = Fc;
         }
         else
         {
-            lim1 = b;
-            lim2 = (three * a + b)/four;
+            b = c;
+            Fb = Fc;
         }
 
 
 
-        // Calculate all the absolute signs
-        // needed to evaluate all the necessary
-        // conditions
+        // Calculate the convergence error
 
-        absSminusB = std::abs(s - b);
-        absBminusC = std::abs(b - c);
-        absCminusD = std::abs(c - d);
-        absBminusA = std::abs(b - a);
-        absD = std::abs(d);
-
-
-
-        if(s < lim1 ||
-           s > lim2 ||
-           (mFlag == true && absSminusB >= absBminusC/two) ||
-           (mFlag == false && absSminusB >= absCminusD/two) ||
-           (mFlag == true && absBminusC < convergenceTolerance) ||
-           (mFlag == false && absCminusD < convergenceTolerance))
-        {
-            bisectionStep(a,b,s);
-            mFlag = true;
-            ++count;
-        }
-        else
-        {
-            mFlag = false;
-        }
-
-
-
-        Fs = functor(s);
-
-
-
-        d = c;
-
-        c = b;
-        Fc = Fb;
-
-
-
-        if(Fa*Fs < zero)
-        {
-            b = s;
-            Fb = Fs;
-        }
-        else
-        {
-            a = s;
-            Fa = Fs;
-        }
-
-
-
-        if(std::abs(Fa) < std::abs(Fb))
-        {
-            std::swap(a,b);
-            std::swap(Fa,Fb);
-        }
+        errorValue = sign(c - c_old) * (c - c_old) / c;
 
 
 
@@ -492,12 +474,209 @@ inline blDataType brentsMethod(blDataType a,
 
         ++iterations;
     }
+    while((iterations < maxIterations) &&
+          (Fc != blFunctorReturnType(0)) &&
+          (sign(errorValue)*errorValue > sign(TOL)*TOL));
 
 
 
     // We return the found root
 
-    return s;
+    return c;
+}
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// This function implement the Bisection Method
+//-------------------------------------------------------------------
+template<typename blDataType,
+         typename blFunctorType>
+
+inline blDataType bisectionMethod(blDataType a,
+                                  blDataType b,
+                                  const blFunctorType& functor,
+                                  const blDataType& TOL,
+                                  const int& maxIterations)
+{
+    // First we check for the specified
+    // bounds being the same
+
+    if(a == b)
+    {
+        return a;
+    }
+
+
+
+    // Here we evaluate the function at
+    // the specified bounds
+
+    auto Fa = functor(a);
+    auto Fb = functor(b);
+
+
+
+    // The return type of the functor
+
+    typedef decltype(Fa) blFunctorReturnType;
+
+
+
+    // Now we check if there is a root
+    // between the specified bounds
+    // including the bounds themselves
+
+    if(Fa == 0)
+        return a;
+    else if(Fb == 0)
+        return b;
+    else if(Fa * Fb > 0)
+    {
+        return Fa;
+    }
+
+
+
+    // Now we move on with the bisection method
+
+    blDataType c = a;
+    auto Fc = Fa;
+
+    blDataType c_old;
+    blDataType errorValue;
+
+    int iterations = 0;
+
+    do
+    {
+        c_old = c;
+
+        c = (a + b) / blDataType(2);
+
+        Fc = functor(c);
+
+        if(sign(Fc) == sign(Fa))
+            a = c;
+        else
+            b = c;
+
+        errorValue = sign(c - c_old) * (c - c_old) / c;
+
+        ++iterations;
+    }
+    while((iterations < maxIterations) &&
+          (Fc != blFunctorReturnType(0)) &&
+          (errorValue > TOL));
+
+
+
+    // We return the found root
+
+    return c;
+}
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// This function implements the False Position Method
+//-------------------------------------------------------------------
+template<typename blDataType,
+         typename blFunctorType>
+
+inline blDataType falsePositionMethod(blDataType a,
+                                      blDataType b,
+                                      const blFunctorType& functor,
+                                      const blDataType& TOL,
+                                      const int& maxIterations)
+{
+    // First we check for the specified
+    // bounds being the same
+
+    if(a == b)
+    {
+        return a;
+    }
+
+
+
+    // Here we evaluate the function at
+    // the specified bounds
+
+    auto Fa = functor(a);
+    auto Fb = functor(b);
+
+
+
+    // The return type of the functor
+
+    typedef decltype(Fa) blFunctorReturnType;
+
+
+
+    // Now we check if there is a root
+    // between the specified bounds
+    // including the bounds themselves
+
+    if(Fa == 0)
+        return a;
+    else if(Fb == 0)
+        return b;
+    else if(Fa * Fb > 0)
+    {
+        return Fa;
+    }
+    if(a == b)
+    {
+        return a;
+    }
+
+
+
+    // Now we move on with the false position method
+
+    blDataType c = a;
+    auto Fc = Fa;
+
+    blDataType c_old;
+    blDataType errorValue;
+
+    int iterations = 0;
+
+    do
+    {
+        c_old = c;
+
+        c = c = (Fb*a - Fa*b) / (Fb - Fa);
+
+        Fc = functor(c);
+
+        if(sign(Fc) == sign(Fa))
+        {
+            a = c;
+            Fa = functor(a);
+        }
+        else
+        {
+            b = c;
+            Fb = functor(b);
+        }
+
+        errorValue = sign(c - c_old) * (c - c_old) / c;
+
+        ++iterations;
+    }
+    while((iterations < maxIterations) &&
+          (Fc != blFunctorReturnType(0)) &&
+          (errorValue > TOL));
+
+
+
+    // We return the found root
+
+    return c;
 }
 //-------------------------------------------------------------------
 
