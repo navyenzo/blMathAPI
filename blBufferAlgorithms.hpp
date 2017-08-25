@@ -461,7 +461,7 @@ template<typename blDataIteratorType,
 
 inline size_t countDataRows(const blDataIteratorType& beginIter,
                             const blDataIteratorType& endIter,
-                            const blTokenType& dataToken,
+                            const blTokenType& rowToken,
                             const bool& shouldZeroLengthRowsBeCounted)
 {
     // Check the inputs
@@ -495,7 +495,7 @@ inline size_t countDataRows(const blDataIteratorType& beginIter,
 
         secondTokenIterator = find(firstTokenIterator,
                                    endIter,
-                                   dataToken,
+                                   rowToken,
                                    0);
 
         if(secondTokenIterator == firstTokenIterator &&
@@ -547,7 +547,7 @@ template<typename blDataIteratorType,
 
 inline size_t countDataRows(const blDataIteratorType& beginIter,
                             const blDataIteratorType& endIter,
-                            const blTokenType& dataToken,
+                            const blTokenType& rowToken,
                             const bool& shouldZeroLengthRowsBeCounted,
                             const blPredicateFunctorType& predicateFunctor)
 {
@@ -582,7 +582,7 @@ inline size_t countDataRows(const blDataIteratorType& beginIter,
 
         secondTokenIterator = find(firstTokenIterator,
                                    endIter,
-                                   dataToken,
+                                   rowToken,
                                    0,
                                    predicateFunctor);
 

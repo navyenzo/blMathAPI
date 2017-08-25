@@ -1001,13 +1001,13 @@ inline blStringIteratorType convertStringToNumber(const blStringIteratorType& be
 template<typename blDataIteratorType,
          typename blNumberType>
 
-class blStringColumnVectorIterator
+class blStringMatrixIterator
 {
 public:
 
     // Iterator traits
 
-    using iterator_category = std::forward_iterator_tag;
+    using iterator_category = std::random_access_iterator_tag;
     using value_type = blNumberType;
     using difference_type = ptrdiff_t;
     using pointer = blNumberType*;
@@ -1015,36 +1015,77 @@ public:
 
 
 
-    blStringColumnVectorIterator(const blDataIteratorType& beginIter,
+    blStringMatrixIterator(const blDataIteratorType& beginIter,
                                  const blDataIteratorType& endIter)
     {
-        setIterators(beginIter,endIter);
+        m_beginIter = beginIter;
+        m_endIter = endIter;
+        m_iter = m_beginIter;
+
+        m_number = 0;
+
+        m_row = 0;
+
+        calculateTotalNumberOfRows();
+
+        convertToNumber();
     }
 
 
 
-    blStringColumnVectorIterator(const blStringColumnVectorIterator<blDataIteratorType,blNumberType>& stringColumnVectorIterator) = default;
+    blStringMatrixIterator(const blStringMatrixIterator<blDataIteratorType,blNumberType>& stringColumnVectorIterator) = default;
 
 
 
-    ~blStringColumnVectorIterator()
+    ~blStringMatrixIterator()
     {
     }
 
 
 
-    blStringColumnVectorIterator<blDataIteratorType,blNumberType>&      operator=(const blStringColumnVectorIterator<blDataIteratorType,blNumberType>& stringColumnVectorIterator) = default;
+    blStringMatrixIterator<blDataIteratorType,blNumberType>&        operator=(const blStringMatrixIterator<blDataIteratorType,blNumberType>& stringColumnVectorIterator) = default;
 
 
 
-    bool                            operator==(const blStringColumnVectorIterator<blDataIteratorType,blNumberType>& stringColumnVectorIterator)const
+    operator bool()const
+    {
+        return !(m_iter == m_endIter);
+    }
+
+
+
+    bool                            operator==(const blStringMatrixIterator<blDataIteratorType,blNumberType>& stringColumnVectorIterator)const
     {
         return (m_iter == stringColumnVectorIterator.getIter());
     }
 
-    bool                            operator!=(const blStringColumnVectorIterator<blDataIteratorType,blNumberType>& stringColumnVectorIterator)const
+    bool                            operator!=(const blStringMatrixIterator<blDataIteratorType,blNumberType>& stringColumnVectorIterator)const
     {
         return (m_iter != stringColumnVectorIterator.getIter());
+    }
+
+
+
+    const blNumberType&             operator[](const ptrdiff_t& index)
+    {
+        (*this) += index - m_row;
+        return m_number;
+    }
+
+
+
+    const blNumberType&             operator()(const ptrdiff_t& index)
+    {
+        (*this) += index - m_row;
+        return m_number;
+    }
+
+
+
+    const blNumberType&             at(const ptrdiff_t& index)
+    {
+        (*this) += index - m_row;
+        return m_number;
     }
 
 
@@ -1054,17 +1095,14 @@ public:
         return &m_number;
     }
 
-    blNumberType&                   operator*()
-    {
-        return m_number;
-    }
-
     const blNumberType&             operator*()const
     {
         return m_number;
     }
 
-    blStringColumnVectorIterator<blDataIteratorType,blNumberType>&      operator+=(const ptrdiff_t& movement)
+
+
+    blStringMatrixIterator<blDataIteratorType,blNumberType>&        operator+=(const ptrdiff_t& movement)
     {
         if(movement > 0)
         {
@@ -1097,22 +1135,22 @@ public:
         return (*this);
     }
 
-    blStringColumnVectorIterator<blDataIteratorType,blNumberType>&      operator-=(const ptrdiff_t& movement)
+    blStringMatrixIterator<blDataIteratorType,blNumberType>&        operator-=(const ptrdiff_t& movement)
     {
         return this->operator+=(-movement);
     }
 
-    blStringColumnVectorIterator<blDataIteratorType,blNumberType>&      operator++()
+    blStringMatrixIterator<blDataIteratorType,blNumberType>&        operator++()
     {
         return operator+=(1);
     }
 
-    blStringColumnVectorIterator<blDataIteratorType,blNumberType>&      operator--()
+    blStringMatrixIterator<blDataIteratorType,blNumberType>&        operator--()
     {
         return operator+=(-1);
     }
 
-    blStringColumnVectorIterator<blDataIteratorType,blNumberType>      operator++(int)
+    blStringMatrixIterator<blDataIteratorType,blNumberType>         operator++(int)
     {
         auto temp(*this);
 
@@ -1121,7 +1159,7 @@ public:
         return temp;
     }
 
-    blStringColumnVectorIterator<blDataIteratorType,blNumberType>      operator--(int)
+    blStringMatrixIterator<blDataIteratorType,blNumberType>         operator--(int)
     {
         auto temp(*this);
 
@@ -1130,7 +1168,7 @@ public:
         return temp;
     }
 
-    blStringColumnVectorIterator<blDataIteratorType,blNumberType>      operator+(const ptrdiff_t& movement)const
+    blStringMatrixIterator<blDataIteratorType,blNumberType>         operator+(const ptrdiff_t& movement)const
     {
         auto temp(*this);
 
@@ -1139,7 +1177,7 @@ public:
         return temp;
     }
 
-    blStringColumnVectorIterator<blDataIteratorType,blNumberType>      operator-(const ptrdiff_t& movement)const
+    blStringMatrixIterator<blDataIteratorType,blNumberType>         operator-(const ptrdiff_t& movement)const
     {
         auto temp(*this);
 
@@ -1154,14 +1192,14 @@ public:
     // two pointers (it gives the
     // distance)
 
-    ptrdiff_t                       operator-(const blStringColumnVectorIterator<blDataIteratorType,blNumberType>& stringColumnVectorIterator)const
+    ptrdiff_t                       operator-(const blStringMatrixIterator<blDataIteratorType,blNumberType>& stringColumnVectorIterator)const
     {
         return (m_iter - stringColumnVectorIterator.getIter());
     }
 
 
 
-    void                            setIterators(const blDataIteratorType& beginIter,
+    virtual void                    setIterators(const blDataIteratorType& beginIter,
                                                  const blDataIteratorType& endIter)
     {
         m_beginIter = beginIter;
@@ -1172,7 +1210,21 @@ public:
 
         m_row = 0;
 
+        calculateTotalNumberOfRows();
+
         convertToNumber();
+    }
+
+
+
+    const int&                      calculateTotalNumberOfRows()
+    {
+        m_totalNumberOfRows = countDataRows(m_beginIter,
+                                            m_endIter,
+                                            '\n',
+                                            false);
+
+        return m_totalNumberOfRows;
     }
 
 
@@ -1212,6 +1264,13 @@ public:
 
 
 
+    const int&                      getTotalNumberOfRows()const
+    {
+        return m_totalNumberOfRows;
+    }
+
+
+
 private:
 
     void                            convertToNumber()
@@ -1221,22 +1280,22 @@ private:
 
 
 
-private:
+protected:
 
     // Begin and end iterators
     // used to know where the
     // given buffer begins and
     // ends
 
-    blDataIteratorType      m_beginIter;
-    blDataIteratorType      m_endIter;
+    blDataIteratorType              m_beginIter;
+    blDataIteratorType              m_endIter;
 
 
 
     // The iterator used to move through
     // the buffer
 
-    blDataIteratorType      m_iter;
+    blDataIteratorType              m_iter;
 
 
 
@@ -1244,14 +1303,181 @@ private:
     // iterator is currently pointing at
     // in the buffer
 
-    blNumberType            m_number;
+    blNumberType                    m_number;
 
 
 
     //  Current row in the buffer assuming
     // the buffer is a column vector
 
-    int                     m_row;
+    int                             m_row;
+
+
+
+    // Total number of data rows
+
+    int                             m_totalNumberOfRows;
+};
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// The following functor based on the previous one, assumes
+// the string is an (n x 1) column vector of values, representing
+// data points, where each data point is a matrix of data of
+// size (rows x cols), the string is assumed to be formatted as
+// follows:
+//
+// Line 1 -- Serial number (a number representing a signature/type)
+// Line 2 -- rows
+// Line 3 -- cols
+// Line 4 - Line n -- The data points one matrix at a time
+// NOTE:  If the matrix is a 2d matrix then the cols = 1, for 3d matrices
+//        the cols > 1
+//-------------------------------------------------------------------
+template<typename blDataIteratorType,
+         typename blNumberType>
+
+class blStringMatrixIterator2 : public blStringMatrixIterator<blDataIteratorType,blNumberType>
+{
+public:
+
+    // Iterator traits
+
+    using iterator_category = std::random_access_iterator_tag;
+    using value_type = blNumberType;
+    using difference_type = ptrdiff_t;
+    using pointer = blNumberType*;
+    using reference = blNumberType&;
+
+
+
+    blStringMatrixIterator2(const blDataIteratorType& beginIter,
+                                  const blDataIteratorType& endIter)
+                                  : blStringMatrixIterator<blDataIteratorType,blNumberType>(beginIter,endIter)
+    {
+        m_serialNumber = blStringMatrixIterator<blDataIteratorType,blNumberType>::at(0);
+
+        m_rows = blStringMatrixIterator<blDataIteratorType,blNumberType>::at(1);
+        m_cols = blStringMatrixIterator<blDataIteratorType,blNumberType>::at(2);
+
+        ++(*this);
+    }
+
+
+
+    blStringMatrixIterator2(const blStringMatrixIterator2<blDataIteratorType,blNumberType>& stringColumnVectorIterator2) = default;
+
+
+
+    ~blStringMatrixIterator2()
+    {
+    }
+
+
+
+    blStringMatrixIterator2<blDataIteratorType,blNumberType>&      operator=(const blStringMatrixIterator2<blDataIteratorType,blNumberType>& stringColumnVectorIterator2) = default;
+
+
+
+    virtual void                    setIterators(const blDataIteratorType& beginIter,
+                                                 const blDataIteratorType& endIter)
+    {
+        blStringMatrixIterator<blDataIteratorType,blNumberType>::setIterators(beginIter,endIter);
+
+        m_serialNumber = this->at(0);
+
+        m_rows = this->at(1);
+        m_cols = this->at(2);
+
+        ++(*this);
+    }
+
+
+
+    // Let's override the access operators so that
+    // they access only the data points and not
+    // the string header (serial number, rows, cols)
+
+
+
+    const blNumberType&             operator[](const ptrdiff_t& index)
+    {
+        blStringMatrixIterator<blDataIteratorType,blNumberType>::at(index + 3);
+
+        return this->m_number;
+    }
+
+
+
+    const blNumberType&             operator()(const ptrdiff_t& index)
+    {
+        blStringMatrixIterator<blDataIteratorType,blNumberType>::at(index + 3);
+
+        return this->m_number;
+    }
+
+
+
+    const blNumberType&             operator()(const int& row,
+                                               const int& col)
+    {
+        blStringMatrixIterator<blDataIteratorType,blNumberType>::at(row + this->m_rows * col + 3);
+
+        return this->m_number;
+    }
+
+
+
+    const blNumberType&             at(const ptrdiff_t& index)
+    {
+        blStringMatrixIterator<blDataIteratorType,blNumberType>::at(index + 3);
+
+        return this->m_number;
+    }
+
+
+
+    const blNumberType&             at(const int& row,
+                                       const int& col)
+    {
+        blStringMatrixIterator<blDataIteratorType,blNumberType>::at(row + this->m_rows * col + 3);
+
+        return this->m_number;
+    }
+
+
+
+    const blNumberType&             getSerialNumber()const
+    {
+        return m_serialNumber;
+    }
+
+    const int&                      getRows()const
+    {
+        return m_rows;
+    }
+
+    const int&                      getCols()const
+    {
+        return m_cols;
+    }
+
+
+
+protected:
+
+    // Serial number
+
+    blNumberType                    m_serialNumber;
+
+
+
+    // Data is represented as rows x cols
+
+    int                             m_rows;
+    int                             m_cols;
 };
 //-------------------------------------------------------------------
 
