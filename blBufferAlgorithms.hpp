@@ -40,12 +40,120 @@
 
 
 //-------------------------------------------------------------------
+// The following functions can be used to
+// read from a stream into a buffer/variable
+// of any type and write from a buffer/variable of
+// any type into a stream, assuming the following:
+//
+// -- stream defines the functions: read and write that look
+//    like the iostream equivalent functions
+//-------------------------------------------------------------------
+template<typename blInputStreamType,
+         typename blValueType>
+
+inline blInputStreamType& readValue(blInputStreamType& is,blValueType& value)
+{
+    is.read(reinterpret_cast<char*>(&value),sizeof(value));
+    return is;
+}
+
+
+
+template<typename blInputStreamType,
+         typename blBufferType>
+
+inline blInputStreamType& readBuffer(blInputStreamType& is,blBufferType& buffer,const int& bufferLength)
+{
+    is.read(reinterpret_cast<char*>(&buffer[0]),sizeof(buffer[0])*bufferLength);
+    return is;
+}
+
+
+
+template<typename blOutputStreamType,
+         typename blValueType>
+
+inline blOutputStreamType& writeValue(blOutputStreamType& os,blValueType& value)
+{
+    os.write(reinterpret_cast<const char*>(&value),sizeof(value));
+    return os;
+}
+
+
+
+template<typename blOutputStreamType,
+         typename blBufferType>
+
+inline blOutputStreamType& writeBuffer(blOutputStreamType& os,const blBufferType& buffer,const int& bufferLength)
+{
+    os.write(reinterpret_cast<const char*>(&buffer[0]),sizeof(buffer[0])*bufferLength);
+    return os;
+}
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// The following function reads from a specified
+// input stream and write the information into a
+// specified output stream using a specified buffer
+//
+// -- The function assumes that the streams define
+//    the "read", "write" and "gcount" functions
+//
+// -- The function also assumes that the buffer
+//    defines the "operator[]" and "size" functions
+//-------------------------------------------------------------------
+template<typename blInputStreamType,
+         typename blOutputStreamType,
+         typename blBufferType>
+
+inline void readFromStreamWriteToStream(blInputStreamType& inputStream,
+                                        blOutputStreamType& outputStream,
+                                        blBufferType& buffer)
+{
+    // Variable used to know how
+    // many bytes were read from
+    // the input stream during
+    // the last read
+
+    int numberOfBytesRead = 1;
+
+
+
+    // Keep reading/writing until
+    // no more bytes are read
+
+    if(buffer.size() > 0)
+    {
+        while(numberOfBytesRead > 0)
+        {
+            inputStream.read(reinterpret_cast<char*>(&buffer[0]),sizeof(buffer[0]) * buffer.size());
+
+            numberOfBytesRead = inputStream.gcount();
+
+            outputStream.write(reinterpret_cast<char*>(&buffer[0]),numberOfBytesRead);
+        }
+    }
+
+
+
+    // We're done
+
+    return;
+}
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
 // The following function checks
 // two buffers to see if they are
 // partially equal
 //-------------------------------------------------------------------
 template<typename blBuffer1IteratorType,
          typename blBuffer2IteratorType>
+
 inline bool isPartiallyEqual(blBuffer1IteratorType beginOfBufferToCheck,
                              const blBuffer1IteratorType& endOfBufferToCheck,
                              blBuffer2IteratorType beginOfBufferToCheckAgainst,
@@ -129,6 +237,7 @@ inline bool isPartiallyEqual(blBuffer1IteratorType beginOfBufferToCheck,
 //-------------------------------------------------------------------
 template<typename blBuffer1IteratorType,
          typename blBuffer2IteratorType>
+
 inline bool isEqual(blBuffer1IteratorType beginOfBufferToCheck,
                     const blBuffer1IteratorType& endOfBufferToCheck,
                     blBuffer2IteratorType beginOfBufferToCheckAgainst,
@@ -177,6 +286,7 @@ inline bool isEqual(blBuffer1IteratorType beginOfBufferToCheck,
 template<typename blBuffer1IteratorType,
          typename blBuffer2IteratorType,
          typename blPredicateFunctorType>
+
 inline bool isEqual(blBuffer1IteratorType beginOfBufferToCheck,
                     const blBuffer1IteratorType& endOfBufferToCheck,
                     blBuffer2IteratorType beginOfBufferToCheckAgainst,
@@ -233,6 +343,7 @@ inline bool isEqual(blBuffer1IteratorType beginOfBufferToCheck,
 template<typename blBuffer1IteratorType,
          typename blBuffer2IteratorType,
          typename blIntegerType>
+
 inline blBuffer2IteratorType copy(const blBuffer1IteratorType& inputBegin,
                                   const blBuffer1IteratorType& inputEnd,
                                   const blBuffer2IteratorType& outputBegin,
@@ -270,6 +381,7 @@ inline blBuffer2IteratorType copy(const blBuffer1IteratorType& inputBegin,
 template<typename blBuffer1IteratorType,
          typename blBuffer2IteratorType,
          typename blIntegerType>
+
 inline blBuffer2IteratorType copy(const blBuffer1IteratorType& inputBegin,
                                   const blBuffer1IteratorType& inputEnd,
                                   const blBuffer2IteratorType& outputBegin,
@@ -315,6 +427,7 @@ inline blBuffer2IteratorType copy(const blBuffer1IteratorType& inputBegin,
 template<typename blTokenType,
          typename blBufferIteratorType,
          typename blIntegerType>
+
 inline blBufferIteratorType find(const blBufferIteratorType& beginIter,
                                  const blBufferIteratorType& endIter,
                                  const blTokenType& token,
@@ -346,6 +459,7 @@ template<typename blTokenType,
          typename blBufferIteratorType,
          typename blIntegerType,
          typename blPredicateFunctorType>
+
 inline blBufferIteratorType find(blBufferIteratorType beginIter,
                                  const blBufferIteratorType& endIter,
                                  const blTokenType& token,

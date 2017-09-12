@@ -1016,7 +1016,7 @@ public:
 
 
     blStringMatrixIterator(const blDataIteratorType& beginIter,
-                                 const blDataIteratorType& endIter)
+                           const blDataIteratorType& endIter)
     {
         m_beginIter = beginIter;
         m_endIter = endIter;
@@ -1024,7 +1024,7 @@ public:
 
         m_number = 0;
 
-        m_row = 0;
+        m_currentLine = 0;
 
         calculateTotalNumberOfRows();
 
@@ -1068,7 +1068,7 @@ public:
 
     const blNumberType&             operator[](const ptrdiff_t& index)
     {
-        (*this) += index - m_row;
+        (*this) += index - m_currentLine;
         return m_number;
     }
 
@@ -1076,7 +1076,7 @@ public:
 
     const blNumberType&             operator()(const ptrdiff_t& index)
     {
-        (*this) += index - m_row;
+        (*this) += index - m_currentLine;
         return m_number;
     }
 
@@ -1084,7 +1084,7 @@ public:
 
     const blNumberType&             at(const ptrdiff_t& index)
     {
-        (*this) += index - m_row;
+        (*this) += index - m_currentLine;
         return m_number;
     }
 
@@ -1111,22 +1111,22 @@ public:
             if(actualMovement < movement)
                 m_iter = m_endIter;
 
-            m_row += actualMovement;
+            m_currentLine += actualMovement;
 
             convertToNumber();
         }
         else if(movement < 0)
         {
-            int newRowToFind = m_row + movement;
+            int newRowToFind = m_currentLine + movement;
 
             if(newRowToFind < 0)
             {
-                m_row = 0;
+                m_currentLine = 0;
                 m_iter = m_beginIter;
             }
             else
             {
-                m_row = findBeginningOfNthDataRow(m_beginIter,m_endIter,'\n',false,newRowToFind,m_iter);
+                m_currentLine = findBeginningOfNthDataRow(m_beginIter,m_endIter,'\n',false,newRowToFind,m_iter);
             }
 
             convertToNumber();
@@ -1199,7 +1199,7 @@ public:
 
 
 
-    virtual void                    setIterators(const blDataIteratorType& beginIter,
+    void                            setIterators(const blDataIteratorType& beginIter,
                                                  const blDataIteratorType& endIter)
     {
         m_beginIter = beginIter;
@@ -1208,7 +1208,7 @@ public:
 
         m_number = 0;
 
-        m_row = 0;
+        m_currentLine = 0;
 
         calculateTotalNumberOfRows();
 
@@ -1219,19 +1219,19 @@ public:
 
     const int&                      calculateTotalNumberOfRows()
     {
-        m_totalNumberOfRows = countDataRows(m_beginIter,
-                                            m_endIter,
-                                            '\n',
-                                            false);
+        m_totalNumberOfLines = countDataRows(m_beginIter,
+                                             m_endIter,
+                                             '\n',
+                                             false);
 
-        return m_totalNumberOfRows;
+        return m_totalNumberOfLines;
     }
 
 
 
-    const int&                      getRow()const
+    const int&                      getCurrentLine()const
     {
-        return m_row;
+        return m_currentLine;
     }
 
 
@@ -1264,9 +1264,9 @@ public:
 
 
 
-    const int&                      getTotalNumberOfRows()const
+    const int&                      getTotalNumberOfLines()const
     {
-        return m_totalNumberOfRows;
+        return m_totalNumberOfLines;
     }
 
 
@@ -1307,16 +1307,15 @@ protected:
 
 
 
-    //  Current row in the buffer assuming
-    // the buffer is a column vector
+    //  Current line in the buffer
 
-    int                             m_row;
+    int                             m_currentLine;
 
 
 
     // Total number of data rows
 
-    int                             m_totalNumberOfRows;
+    int                             m_totalNumberOfLines;
 };
 //-------------------------------------------------------------------
 
@@ -1335,6 +1334,26 @@ protected:
 // Line 4 - Line n -- The data points one matrix at a time
 // NOTE:  If the matrix is a 2d matrix then the cols = 1, for 3d matrices
 //        the cols > 1
+//
+// For example a (2xN) matrix would look like the following:
+//
+// 123454321 (some serial number)
+// 2 (the rows in each data point)
+// 1 (the columns in each data point, so this means each data point
+//   is a single column vector
+// 0,0
+// 1,0
+// 2,0
+// 0,1
+// 1,1
+// 2,1
+// 0,2
+// 1,2
+// 2,2
+// 0,3
+// ...
+// 2,N
+// End of file
 //-------------------------------------------------------------------
 template<typename blDataIteratorType,
          typename blNumberType>
@@ -1354,13 +1373,18 @@ public:
 
 
     blStringMatrixIterator2(const blDataIteratorType& beginIter,
-                                  const blDataIteratorType& endIter)
-                                  : blStringMatrixIterator<blDataIteratorType,blNumberType>(beginIter,endIter)
+                            const blDataIteratorType& endIter)
+                            : blStringMatrixIterator<blDataIteratorType,blNumberType>(beginIter,endIter)
     {
         m_serialNumber = blStringMatrixIterator<blDataIteratorType,blNumberType>::at(0);
 
         m_rows = blStringMatrixIterator<blDataIteratorType,blNumberType>::at(1);
         m_cols = blStringMatrixIterator<blDataIteratorType,blNumberType>::at(2);
+
+        m_totalNumberOfDataPointsPerRow  = std::max(this->m_totalNumberOfLines - 3,0) / m_rows;
+
+        m_currentRow = 0;
+        m_currentCol = 0;
 
         ++(*this);
     }
@@ -1381,17 +1405,91 @@ public:
 
 
 
-    virtual void                    setIterators(const blDataIteratorType& beginIter,
+    void                            setIterators(const blDataIteratorType& beginIter,
                                                  const blDataIteratorType& endIter)
     {
         blStringMatrixIterator<blDataIteratorType,blNumberType>::setIterators(beginIter,endIter);
 
-        m_serialNumber = this->at(0);
+        m_serialNumber = blStringMatrixIterator<blDataIteratorType,blNumberType>::at(0);
 
-        m_rows = this->at(1);
-        m_cols = this->at(2);
+        m_rows = blStringMatrixIterator<blDataIteratorType,blNumberType>::at(1);
+        m_cols = blStringMatrixIterator<blDataIteratorType,blNumberType>::at(2);
+
+        m_totalNumberOfDataPointsPerRow  = std::max(this->m_totalNumberOfLines - 3,0) / m_rows;
+
+        m_currentRow = 0;
+        m_currentCol = 0;
 
         ++(*this);
+    }
+
+
+
+    // Let's override the arithmetic operators
+    // to make this move like a row-major matrix
+
+    blStringMatrixIterator2<blDataIteratorType,blNumberType>&       operator+=(const ptrdiff_t& movement)
+    {
+        int currentIndex = m_currentRow * m_totalNumberOfDataPointsPerRow + m_currentCol;
+        int desiredIndex = currentIndex + movement;
+
+        int desiredRow = desiredIndex / m_totalNumberOfDataPointsPerRow;
+        int desiredCol = desiredIndex % m_totalNumberOfDataPointsPerRow;
+
+        this->at(desiredRow,desiredCol);
+
+        return (*this);
+    }
+
+    blStringMatrixIterator2<blDataIteratorType,blNumberType>&       operator-=(const ptrdiff_t& movement)
+    {
+        return this->operator+=(-movement);
+    }
+
+    blStringMatrixIterator2<blDataIteratorType,blNumberType>&       operator++()
+    {
+        return operator+=(1);
+    }
+
+    blStringMatrixIterator2<blDataIteratorType,blNumberType>&       operator--()
+    {
+        return operator+=(-1);
+    }
+
+    blStringMatrixIterator2<blDataIteratorType,blNumberType>        operator++(int)
+    {
+        auto temp(*this);
+
+        operator+=(1);
+
+        return temp;
+    }
+
+    blStringMatrixIterator2<blDataIteratorType,blNumberType>        operator--(int)
+    {
+        auto temp(*this);
+
+        operator+=(-1);
+
+        return temp;
+    }
+
+    blStringMatrixIterator2<blDataIteratorType,blNumberType>        operator+(const ptrdiff_t& movement)const
+    {
+        auto temp(*this);
+
+        temp += movement;
+
+        return temp;
+    }
+
+    blStringMatrixIterator2<blDataIteratorType,blNumberType>        operator-(const ptrdiff_t& movement)const
+    {
+        auto temp(*this);
+
+        temp -= movement;
+
+        return temp;
     }
 
 
@@ -1423,9 +1521,7 @@ public:
     const blNumberType&             operator()(const int& row,
                                                const int& col)
     {
-        blStringMatrixIterator<blDataIteratorType,blNumberType>::at(row + this->m_rows * col + 3);
-
-        return this->m_number;
+        return this->at(row,col);
     }
 
 
@@ -1442,14 +1538,24 @@ public:
     const blNumberType&             at(const int& row,
                                        const int& col)
     {
+        // First we try to find
+        // the correct line
+        // in the buffer
+
         blStringMatrixIterator<blDataIteratorType,blNumberType>::at(row + this->m_rows * col + 3);
+
+        // Then we update the
+        // current row and column
+
+        m_currentRow = (this->m_currentLine - 3) % m_rows;
+        m_currentCol = (this->m_currentLine - 3) / m_rows;
 
         return this->m_number;
     }
 
 
 
-    const blNumberType&             getSerialNumber()const
+    const int&                      getSerialNumber()const
     {
         return m_serialNumber;
     }
@@ -1466,11 +1572,30 @@ public:
 
 
 
+    const int&                      getCurrentRow()const
+    {
+        return m_currentRow;
+    }
+
+    const int&                      getCurrentCol()const
+    {
+        return m_currentCol;
+    }
+
+
+
+    int                             getTotalNumberOfDataPointsPerRow()const
+    {
+        return m_totalNumberOfDataPointsPerRow;
+    }
+
+
+
 protected:
 
     // Serial number
 
-    blNumberType                    m_serialNumber;
+    int                             m_serialNumber;
 
 
 
@@ -1478,6 +1603,19 @@ protected:
 
     int                             m_rows;
     int                             m_cols;
+
+
+
+    // Total number of data points per row
+
+    int                             m_totalNumberOfDataPointsPerRow;
+
+
+
+    //  Current row and column in the buffer
+
+    int                             m_currentRow;
+    int                             m_currentCol;
 };
 //-------------------------------------------------------------------
 
