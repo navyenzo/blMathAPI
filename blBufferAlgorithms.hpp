@@ -16,14 +16,6 @@
 //
 // LISENSE:         MIT-LICENCE
 //                  http://www.opensource.org/licenses/mit-license.php
-//
-// DEPENDENCIES:
-//
-// NOTES:
-//
-// DATE CREATED:    Dec/19/2011
-//
-// DATE UPDATED:
 //-------------------------------------------------------------------
 
 
