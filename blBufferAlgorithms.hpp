@@ -32,13 +32,22 @@
 
 
 //-------------------------------------------------------------------
-// The following functions can be used to
-// read from a stream into a buffer/variable
-// of any type and write from a buffer/variable of
-// any type into a stream, assuming the following:
+// The following functions can be used to:
+// -- Read from a stream into a buffer/variable
+//    of any type
+// -- Write from a buffer/variable of
+//    any type into a stream
 //
-// -- stream defines the functions: read and write that look
-//    like the iostream equivalent functions
+// It assumes the following:
+//
+// -- stream defines the functions: "read" and "write" that look
+//    like the iostream functions
+//
+// -- buffer defines data() function that returns pointer
+//    to its first element
+//
+// -- buffer defines size() function that returns
+//    the size/length of the buffer
 //-------------------------------------------------------------------
 template<typename blInputStreamType,
          typename blValueType>
@@ -54,9 +63,20 @@ inline blInputStreamType& readValue(blInputStreamType& is,blValueType& value)
 template<typename blInputStreamType,
          typename blBufferType>
 
+inline blInputStreamType& readBuffer(blInputStreamType& is,blBufferType& buffer)
+{
+    is.read(reinterpret_cast<char*>(buffer.data()),sizeof(buffer.data()[0])*buffer.size());
+    return is;
+}
+
+
+
+template<typename blInputStreamType,
+         typename blBufferType>
+
 inline blInputStreamType& readBuffer(blInputStreamType& is,blBufferType& buffer,const int& bufferLength)
 {
-    is.read(reinterpret_cast<char*>(&buffer[0]),sizeof(buffer[0])*bufferLength);
+    is.read(reinterpret_cast<char*>(buffer.data()),sizeof(buffer.data()[0])*bufferLength);
     return is;
 }
 
@@ -65,7 +85,7 @@ inline blInputStreamType& readBuffer(blInputStreamType& is,blBufferType& buffer,
 template<typename blOutputStreamType,
          typename blValueType>
 
-inline blOutputStreamType& writeValue(blOutputStreamType& os,blValueType& value)
+inline blOutputStreamType& writeValue(blOutputStreamType& os,const blValueType& value)
 {
     os.write(reinterpret_cast<const char*>(&value),sizeof(value));
     return os;
@@ -76,9 +96,20 @@ inline blOutputStreamType& writeValue(blOutputStreamType& os,blValueType& value)
 template<typename blOutputStreamType,
          typename blBufferType>
 
+inline blOutputStreamType& writeBuffer(blOutputStreamType& os,const blBufferType& buffer)
+{
+    os.write(reinterpret_cast<const char*>(buffer.data()),sizeof(buffer.data()[0])*buffer.size());
+    return os;
+}
+
+
+
+template<typename blOutputStreamType,
+         typename blBufferType>
+
 inline blOutputStreamType& writeBuffer(blOutputStreamType& os,const blBufferType& buffer,const int& bufferLength)
 {
-    os.write(reinterpret_cast<const char*>(&buffer[0]),sizeof(buffer[0])*bufferLength);
+    os.write(reinterpret_cast<const char*>(buffer.data()),sizeof(buffer.data()[0])*bufferLength);
     return os;
 }
 //-------------------------------------------------------------------
