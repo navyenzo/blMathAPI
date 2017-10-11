@@ -64,13 +64,6 @@ namespace blMathAPI
 
 
 
-    // A collection of simple algorithms
-    // I developed to parse data buffers
-
-    #include "blBufferAlgorithms.hpp"
-
-
-
     // A collection of "downsampling"
     // algorithms for visualizing
     // large data sets
