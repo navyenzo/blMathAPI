@@ -2,6 +2,7 @@
 #define BL_DOWNSAMPLINGALGORITHMS_HPP
 
 
+
 //-------------------------------------------------------------------
 // FILE:            blDownsamplingAlgorithms.hpp
 // CLASS:           None
@@ -28,16 +29,19 @@
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Includes and libs needed for this file and sub-files
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Enums used for this file and sub-files
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
@@ -49,16 +53,16 @@ template<typename srcDataIteratorType,
          typename dstDataIteratorType>
 
 inline void simpleDownsample(srcDataIteratorType srcDataBegin,
-                             const size_t& srcDataSize,
+                             const std::size_t& srcDataSize,
                              dstDataIteratorType dstDataBegin,
-                             const size_t& dstDataSize)
+                             const std::size_t& dstDataSize)
 {
     // First we calculate
     // the downsampling step
 
     double downsamplingStep = double(srcDataSize)/double(dstDataSize);
 
-    size_t previousSourceSamplingIndex = 0;
+    std::size_t previousSourceSamplingIndex = 0;
     double currentSourceSamplingIndex = 0;
 
     // Then we step through
@@ -68,7 +72,7 @@ inline void simpleDownsample(srcDataIteratorType srcDataBegin,
     // into the destination
     // data set
 
-    for(size_t i = 0; i < dstDataSize; ++i)
+    for(std::size_t i = 0; i < dstDataSize; ++i)
     {
         // Sample the
         // data point
@@ -91,10 +95,11 @@ inline void simpleDownsample(srcDataIteratorType srcDataBegin,
         // previous sampling
         // index
 
-        previousSourceSamplingIndex += size_t(currentSourceSamplingIndex - double(previousSourceSamplingIndex));
+        previousSourceSamplingIndex += std::size_t(currentSourceSamplingIndex - double(previousSourceSamplingIndex));
     }
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
@@ -106,9 +111,9 @@ template<typename srcDataIteratorType,
          typename dstDataIteratorType>
 
 inline void largestTriangleThreeBuckets(srcDataIteratorType srcDataBegin,
-                                        const size_t& srcDataSize,
+                                        const std::size_t& srcDataSize,
                                         dstDataIteratorType dstDataBegin,
-                                        const size_t& dstDataSize)
+                                        const std::size_t& dstDataSize)
 {
     if(srcDataSize <= 0 || dstDataSize <= 0)
     {
@@ -173,7 +178,7 @@ inline void largestTriangleThreeBuckets(srcDataIteratorType srcDataBegin,
 
     // Calculate the size of each bucket
 
-    size_t bucketStep = srcDataSize / dstDataSize;
+    std::size_t bucketStep = srcDataSize / dstDataSize;
 
     // Create temporary point values
     // used to find the point to sample
@@ -206,7 +211,7 @@ inline void largestTriangleThreeBuckets(srcDataIteratorType srcDataBegin,
     // Let's step through the data and
     // sample the points of interest
 
-    for(size_t bucketIndex = 0; bucketIndex < dstDataSize; ++bucketIndex)
+    for(std::size_t bucketIndex = 0; bucketIndex < dstDataSize; ++bucketIndex)
     {
         // If we are in the first or
         // last buckets then we just
@@ -230,7 +235,7 @@ inline void largestTriangleThreeBuckets(srcDataIteratorType srcDataBegin,
 
             nextBucketAvgValue = 0;
 
-            for(size_t i = 0; i < bucketStep; ++i)
+            for(std::size_t i = 0; i < bucketStep; ++i)
             {
                 nextBucketAvgValue += (*srcNextBucketIterator);
                 ++srcNextBucketIterator;
@@ -246,7 +251,7 @@ inline void largestTriangleThreeBuckets(srcDataIteratorType srcDataBegin,
             maxTriangleArea = 0;
             currentTriangleArea = 0;
 
-            for(size_t i = 0; i < bucketStep; ++i)
+            for(std::size_t i = 0; i < bucketStep; ++i)
             {
                 currentTriangleArea = std::abs( (nextBucketAvgValue - previousBucketPoint) + two*(previousBucketPoint - (*srcCurrentBucketIterator)) ) / two;
 
@@ -268,6 +273,7 @@ inline void largestTriangleThreeBuckets(srcDataIteratorType srcDataBegin,
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // The following function downsamples a source
 // into the destination container by use of the
@@ -284,10 +290,10 @@ template<typename xSrcDataIteratorType,
 
 inline void largestTriangleThreeBuckets(xSrcDataIteratorType xSrcDataBegin,
                                         ySrcDataIteratorType ySrcDataBegin,
-                                        const size_t& srcDataSize,
+                                        const std::size_t& srcDataSize,
                                         xDstDataIteratorType xDstDataBegin,
                                         yDstDataIteratorType yDstDataBegin,
-                                        const size_t& dstDataSize)
+                                        const std::size_t& dstDataSize)
 {
     if(srcDataSize <= 0 || dstDataSize <= 0)
     {
@@ -356,7 +362,7 @@ inline void largestTriangleThreeBuckets(xSrcDataIteratorType xSrcDataBegin,
 
     // Calculate the size of each bucket
 
-    size_t bucketStep = srcDataSize / dstDataSize;
+    std::size_t bucketStep = srcDataSize / dstDataSize;
 
     // Create temporary point values
     // used to find the point to sample
@@ -390,7 +396,7 @@ inline void largestTriangleThreeBuckets(xSrcDataIteratorType xSrcDataBegin,
     // Let's step through the data and
     // sample the points of interest
 
-    for(size_t bucketIndex = 0; bucketIndex < dstDataSize; ++bucketIndex)
+    for(std::size_t bucketIndex = 0; bucketIndex < dstDataSize; ++bucketIndex)
     {
         // If we are in the first or
         // last buckets then we just
@@ -420,7 +426,7 @@ inline void largestTriangleThreeBuckets(xSrcDataIteratorType xSrcDataBegin,
 
             yNextBucketAvgValue = 0;
 
-            for(size_t i = 0; i < bucketStep; ++i)
+            for(std::size_t i = 0; i < bucketStep; ++i)
             {
                 yNextBucketAvgValue += (*ySrcNextBucketIterator);
                 ++ySrcNextBucketIterator;
@@ -436,7 +442,7 @@ inline void largestTriangleThreeBuckets(xSrcDataIteratorType xSrcDataBegin,
             maxTriangleArea = 0;
             currentTriangleArea = 0;
 
-            for(size_t i = 0; i < bucketStep; ++i)
+            for(std::size_t i = 0; i < bucketStep; ++i)
             {
                 currentTriangleArea = std::abs( (yNextBucketAvgValue - yPreviousBucketPoint) + two*(yPreviousBucketPoint - (*ySrcCurrentBucketIterator)) ) / two;
 
@@ -460,6 +466,7 @@ inline void largestTriangleThreeBuckets(xSrcDataIteratorType xSrcDataBegin,
     }
 }
 //-------------------------------------------------------------------
+
 
 
 #endif // BL_DOWNSAMPLINGALGORITHMS_HPP
