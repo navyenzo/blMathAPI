@@ -33,6 +33,7 @@
 //-------------------------------------------------------------------
 // Includes and libs needed for this file and sub-files
 //-------------------------------------------------------------------
+#include <iterator>
 //-------------------------------------------------------------------
 
 
@@ -87,7 +88,7 @@ inline void simpleDownsample(srcDataIteratorType srcDataBegin,
         // Advance the
         // iterators
 
-        std::advance(srcDataBegin,size_t(currentSourceSamplingIndex) - previousSourceSamplingIndex);
+        std::advance(srcDataBegin,std::size_t(currentSourceSamplingIndex) - previousSourceSamplingIndex);
 
         ++dstDataBegin;
 
