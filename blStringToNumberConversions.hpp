@@ -638,7 +638,10 @@ template<typename blCharacterType>
 
 inline bool isCharNumeric(const blCharacterType& character)
 {
-    return (character >= '0' && character <= '9');
+    return ( (character >= '0' && character <= '9')
+             || character == '-'
+             || character == '+'
+             || character == '.');
 }
 
 
