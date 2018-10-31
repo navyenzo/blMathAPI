@@ -27,6 +27,7 @@
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // FUNCTION:            countIntToStringLength
 //
@@ -74,6 +75,7 @@ inline int countIntToStringLength(blIntegerType number)
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // FUNCTION:            countLeadingDecimalZerosInFloatingPointNumber
 //
@@ -116,6 +118,7 @@ inline int countLeadingDecimalZerosInFloatingPointNumber(blNumberType number,
     return count;
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
@@ -178,6 +181,7 @@ inline int countFloatingPointToStringLength(blNumberType number,
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // FUNCTION:            countFloatingPointToStringLengthUsingScientificNotation
 //
@@ -238,6 +242,7 @@ inline int countFloatingPointToStringLengthUsingScientificNotation(blNumberType 
         return ( countFloatingPointToStringLengthUsingScientificNotation(-number,precision,shouldLeadingZeroBeCounted) + 1 );
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
@@ -312,6 +317,7 @@ inline blStringIteratorType intToString(blIntegerType number,
     return beginReverseIter;
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
@@ -466,6 +472,7 @@ inline blStringIteratorType floatingPointToString(blFloatingPointType number,
     return beginReverseIter;
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
@@ -626,6 +633,7 @@ inline blStringIteratorType floatingPointToStringUsingScientificNotation(blFloat
                                  shouldLastDecimalDigitBeRounded);
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
@@ -989,6 +997,51 @@ inline blStringIteratorType convertStringToNumber(const blStringIteratorType& be
     // current position
 
     return currentPos;
+}
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// Convenient template functions to simplify the
+// use of the string to number conversion function
+//-------------------------------------------------------------------
+template<typename blStringType,
+         typename blNumberType>
+
+inline void convertStringToNumber(const blStringType& inputString,
+                                  blNumberType& outputNumber)
+{
+    convertStringToNumber(inputString.begin(),
+                          inputString.end(),
+                          '.',
+                          0);
+}
+
+
+
+template<typename blStringType>
+
+inline int convertStringToInteger(const blStringType& inputString)
+{
+    int result = -1;
+
+    convertStringToNumber(inputString,result);
+
+    return result;
+}
+
+
+
+template<typename blStringType>
+
+inline double convertStringToDouble(const blStringType& inputString)
+{
+    double result = -1;
+
+    convertStringToNumber(inputString,result);
+
+    return result;
 }
 //-------------------------------------------------------------------
 
