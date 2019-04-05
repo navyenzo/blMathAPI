@@ -2,46 +2,50 @@
 #define BL_STRINGTONUMBERCONVERSIONS_HPP
 
 
+///-------------------------------------------------------------------
+///
+///
+///
+/// PURPOSE:        A collection of simple functions to
+///                 convert strings to numbers and to
+///                 some blMathAPI structures
+///
+/// AUTHOR:         Vincenzo Barbato
+///                 navyenzo@gmail.com
+///
+/// NOTE:           All things in this library are defined within the
+///                 blMathAPI namespace
+///
+/// LISENSE:        MIT-LICENCE
+///                 http://www.opensource.org/licenses/mit-license.php
+///
+///
+///
+///-------------------------------------------------------------------
+
+
+
 //-------------------------------------------------------------------
-// FILE:            blStringToNumberConversions.hpp
-// CLASS:           None
-// BASE CLASS:      None
-//
-// PURPOSE:         A collection of simple functions to
-//                  convert strings to numbers and to
-//                  some blMathAPI structures
-//
-// AUTHOR:          Vincenzo Barbato
-//                  http://www.barbatolabs.com
-//                  navyenzo@gmail.com
-//
-// LISENSE:         MIT-LICENCE
-//                  http://www.opensource.org/licenses/mit-license.php
-//
-// DEPENDENCIES:
-//
-// NOTES:
-//
-// DATE CREATED:    Oct/18/2013
-// DATE UPDATED:
+// Includes needed for this file
+//-------------------------------------------------------------------
+#include "blNumericFunctions.hpp"
 //-------------------------------------------------------------------
 
 
 
 //-------------------------------------------------------------------
-// FUNCTION:            countIntToStringLength
-//
-// ARGUMENTS:           - Number
-//
-// TEMPLATE ARGUMENTS:  - None
-//
-// PURPOSE:             - Count the number of characters that an
-//                        integer is going to need when we convert
-//                        it to a string
-//
-// DEPENDENCIES:        - None
-//
-// NOTES:
+// NOTE: This class is defined within the blMathAPI namespace
+//-------------------------------------------------------------------
+namespace blMathAPI
+{
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// Count the number of characters that an
+// integer is going to need when we convert
+// it to a string
 //-------------------------------------------------------------------
 template<typename blIntegerType>
 
@@ -77,20 +81,9 @@ inline int countIntToStringLength(blIntegerType number)
 
 
 //-------------------------------------------------------------------
-// FUNCTION:            countLeadingDecimalZerosInFloatingPointNumber
-//
-// ARGUMENTS:           - Number
-//                      - Precision
-//
-// TEMPLATE ARGUMENTS:  - blNumberType
-//
-// PURPOSE:             - Count the number of leading zeros after
-//                        the decimal point in a floating point
-//                        number
-//
-// DEPENDENCIES:
-//
-// NOTES:
+//  Count the number of leading zeros after
+//  the decimal point in a floating point
+//  number
 //-------------------------------------------------------------------
 template<typename blNumberType>
 
@@ -122,25 +115,13 @@ inline int countLeadingDecimalZerosInFloatingPointNumber(blNumberType number,
 
 
 //-------------------------------------------------------------------
-// FUNCTION:            countFloatingPointToStringLength
-//
-// ARGUMENTS:           - Number
-//                      - Precision
-//                      - ShouldLeadingZeroBeCounted
-//
-// TEMPLATE ARGUMENTS:  - blNumberType
-//
-// PURPOSE:             - Count the number of characters that a
-//                        floating point number is going to need
-//                        when we convert it to a string using the
-//                        specified decimal precision
-//
-// DEPENDENCIES:
-//
-// NOTES:
+// Count the number of characters that a
+// floating point number is going to need
+// when we convert it to a string using the
+// specified decimal precision
 //-------------------------------------------------------------------
 template<typename blNumberType>
-inline int countFloatingPointToStringLength(blNumberType number,
+inline int countFloatingPointToStringLength(const blNumberType& number,
                                             const int& precision,
                                             const bool& shouldLeadingZeroBeCounted)
 {
@@ -183,27 +164,15 @@ inline int countFloatingPointToStringLength(blNumberType number,
 
 
 //-------------------------------------------------------------------
-// FUNCTION:            countFloatingPointToStringLengthUsingScientificNotation
-//
-// ARGUMENTS:           - Number
-//                      - Precision
-//                      - ShouldLeadingZeroBeCounted
-//
-// TEMPLATE ARGUMENTS:  - blNumberType
-//
-// PURPOSE:             - Count the number of characters that a
-//                        floating point number is going to need
-//                        when we convert it to a string using the
-//                        specified decimal precision and using
-//                        scientific notation
-//
-// DEPENDENCIES:
-//
-// NOTES:
+// Count the number of characters that a
+// floating point number is going to need
+// when we convert it to a string using the
+// specified decimal precision and using
+// scientific notation
 //-------------------------------------------------------------------
 template<typename blNumberType>
 
-inline int countFloatingPointToStringLengthUsingScientificNotation(blNumberType number,
+inline int countFloatingPointToStringLengthUsingScientificNotation(const blNumberType& number,
                                                                    const int& precision,
                                                                    const bool& shouldLeadingZeroBeCounted)
 {
@@ -246,33 +215,19 @@ inline int countFloatingPointToStringLengthUsingScientificNotation(blNumberType 
 
 
 //-------------------------------------------------------------------
-// FUNCTION:            intToString
+// Convert an integer to a string, where the
+// the number will be converted in reverse
+// order.
 //
-// ARGUMENTS:           - Number
-//                      - Base
-//                      - BeginReverseIter
-//                      - EndReverseIter
-//
-// TEMPLATE ARGUMENTS:  - blNumberIntegerType
-//                      - blStringIteratorType
-//
-// PURPOSE:             - Convert an integer to a string, where the
-//                        the number will be converted in reverse
-//                        order.
-//
-//                      - The function will return an iterator
-//                        to the place in the string after the
-//                        last place that it wrote to.
-//
-// DEPENDENCIES:        None
-//
-// NOTES:
+// The function will return an iterator
+// to the place in the string after the
+// last place that it wrote to.
 //-------------------------------------------------------------------
 template<typename blIntegerType,
          typename blStringIteratorType>
 
 inline blStringIteratorType intToString(blIntegerType number,
-                                        const int& base,
+                                        const blIntegerType& base,
                                         blStringIteratorType beginReverseIter,
                                         const blStringIteratorType& endReverseIter)
 {
@@ -294,8 +249,7 @@ inline blStringIteratorType intToString(blIntegerType number,
             return beginReverseIter;
         }
     }
-
-    if(number == 0)
+    else if(number == 0)
     {
         (*beginReverseIter) = '0';
 
@@ -303,10 +257,10 @@ inline blStringIteratorType intToString(blIntegerType number,
     }
     else
     {
-        while( (unsigned long long int)(number) > 0 &&
+        while( static_cast<uint64_t>(number) > 0 &&
                beginReverseIter != endReverseIter )
         {
-            (*beginReverseIter) = ((unsigned long long int)(number) % base) + '0';
+            (*beginReverseIter) = (static_cast<uint64_t>(number) % base) + '0';
 
             ++beginReverseIter;
 
@@ -321,31 +275,13 @@ inline blStringIteratorType intToString(blIntegerType number,
 
 
 //-------------------------------------------------------------------
-// FUNCTION:            floatingPointToString
+// Convert an integer to a string, where the
+// the number will be converted in reverse
+// order.
 //
-// ARGUMENTS:           - Number
-//                      - Precision
-//                      - BeginReverseIter
-//                      - EndReverseIter
-//                      - ShouldLeadingZeroBeCounted
-//                      - ShouldLastDecimalDigitBeRounded
-//
-// TEMPLATE ARGUMENTS:  - blFloatingPointType
-//                      - blStringIteratorType
-//
-// PURPOSE:             - Convert an integer to a string, where the
-//                        the number will be converted in reverse
-//                        order.
-//
-//                      - The function will return an iterator
-//                        to the place in the string after the
-//                        last place that it wrote to.
-//
-// DEPENDENCIES:        - blModF -- Used to separate the integral
-//                                  and fractional parts of the
-//                                  number
-//
-// NOTES:
+// The function will return an iterator
+// to the place in the string after the
+// last place that it wrote to.
 //-------------------------------------------------------------------
 template<typename blFloatingPointType,
          typename blStringIteratorType>
@@ -364,7 +300,7 @@ inline blStringIteratorType floatingPointToString(blFloatingPointType number,
 
     blFloatingPointType integralPart,fractionalPart;
 
-    fractionalPart = std::modf(number,&integralPart);
+    fractionalPart = blMathAPI::modf(number,&integralPart);
 
     if(precision > 0)
     {
@@ -381,7 +317,7 @@ inline blStringIteratorType floatingPointToString(blFloatingPointType number,
         // convert it to an
         // integer
 
-        fractionalPart *= ( std::pow(double(10),double(precision)) );
+        fractionalPart *= ( blMathAPI::power(double(10),double(precision)) );
 
         // Check if last
         // decimal digit
@@ -476,30 +412,13 @@ inline blStringIteratorType floatingPointToString(blFloatingPointType number,
 
 
 //-------------------------------------------------------------------
-// FUNCTION:            floatingPointToStringUsingScientificNotation
+// Convert an integer to a string, where the
+// the number will be converted in reverse
+// order.
 //
-// ARGUMENTS:           - Number
-//                      - Precision
-//                      - BeginReverseIter
-//                      - EndReverseIter
-//                      - ShouldLastDecimalDigitBeRounded
-//
-// TEMPLATE ARGUMENTS:  - blFloatingPointType
-//                      - blStringIteratorType
-//
-// PURPOSE:             - Convert an integer to a string, where the
-//                        the number will be converted in reverse
-//                        order.
-//
-//                      - The function will return an iterator
-//                        to the place in the string after the
-//                        last place that it wrote to.
-//
-// DEPENDENCIES:        - blModF -- Used to separate the integral
-//                                  and fractional parts of the
-//                                  number
-//
-// NOTES:
+// The function will return an iterator
+// to the place in the string after the
+// last place that it wrote to.
 //-------------------------------------------------------------------
 template<typename blFloatingPointType,
          typename blStringIteratorType>
@@ -566,7 +485,7 @@ inline blStringIteratorType floatingPointToStringUsingScientificNotation(blFloat
         // Next we normalize
         // the number
 
-        number /= std::pow(blFloatingPointType(10),blFloatingPointType(numberOfDigits - 1));
+        number /= blMathAPI::power(blFloatingPointType(10),blFloatingPointType(numberOfDigits - 1));
 
         // Finally we write
         // the floating point
@@ -619,7 +538,7 @@ inline blStringIteratorType floatingPointToStringUsingScientificNotation(blFloat
     // Next we normalize
     // the number
 
-    number *= std::pow(blFloatingPointType(10),blFloatingPointType(numberOfLeadingZeros + 1));
+    number *= blMathAPI::power(blFloatingPointType(10),blFloatingPointType(numberOfLeadingZeros + 1));
 
     // Finally we write
     // the floating point
@@ -670,32 +589,16 @@ inline bool isCharNumericPlus(const blCharacterType& character)
 
 
 //-------------------------------------------------------------------
-// FUNCTION:            convertStringToNumber
+// This function converts a sequence
+// of characters to a number.
 //
-// ARGUMENTS:           - BeginIter
-//                      - EndIter
-//                      - DecimalPointDelimiter
-//                      - ConvertedNumber
+// The function returns an iterator
+// to the place after the last character
+// in the sequence that was used to
+// determine the number.
 //
-// TEMPLATE ARGUMENTS:  - blStringIteratorType
-//                      - blCharacterType
-//                      - blNumberType
-//
-// PURPOSE:             - This function converts a sequence
-//                        of characters to a number.
-//                      - The function returns an iterator
-//                        to the place after the last character
-//                        in the sequence that was used to
-//                        determine the number.
-//                      - More clearly, it returns an iterator
-//                        to the first non-valid character.
-//
-// DEPENDENCIES:        - std::pow
-//
-// NOTES:               - This function allows the user to
-//                        specify the symbol that represents
-//                        the decimal point, for example '.'
-//                        or ',' or whatever.
+// More clearly, it returns an iterator
+// to the first non-valid character.
 //-------------------------------------------------------------------
 template<typename blStringIteratorType,
          typename blCharacterType,
@@ -827,7 +730,7 @@ inline blStringIteratorType convertStringToNumber(const blStringIteratorType& be
             // we had a valid
             // exponent
 
-            convertedNumber = blNumberType(std::pow(double(10),double(exponent)));
+            convertedNumber = blNumberType(blMathAPI::power(double(10),double(exponent)));
             currentPos = newPos;
         }
 
@@ -959,7 +862,7 @@ inline blStringIteratorType convertStringToNumber(const blStringIteratorType& be
                 // current number
                 // by 10^Exponent
 
-                convertedNumber = convertedNumber * blNumberType(std::pow(double(10),double(exponent)));
+                convertedNumber = convertedNumber * blNumberType(blMathAPI::power(double(10),double(exponent)));
 
                 currentPos = newPos;
 
@@ -1042,6 +945,13 @@ inline double convertStringToDouble(const blStringType& inputString)
     convertStringToNumber(inputString,result);
 
     return result;
+}
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// End of the blMathAPI namespace
 }
 //-------------------------------------------------------------------
 

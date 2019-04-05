@@ -2,45 +2,51 @@
 #define BL_POINT2DOPERATIONS_HPP
 
 
-//-------------------------------------------------------------------
-// FILE:            blPoint2dOperations.hpp
-// CLASS:           None
-// BASE CLASS:      None
-//
-// PURPOSE:         Useful functions for handling points
-//
-// AUTHOR:          Vincenzo Barbato
-//                  http://www.barbatolabs.com
-//                  navyenzo@gmail.com
-//
-// LISENSE:         MIT-LICENCE
-//                  http://www.opensource.org/licenses/mit-license.php
-//
-// DEPENDENCIES:
-//
-// NOTES:
-//-------------------------------------------------------------------
+///-------------------------------------------------------------------
+///
+///
+///
+/// PURPOSE:        Useful functions for handling 2d points
+///
+/// AUTHOR:         Vincenzo Barbato
+///                 navyenzo@gmail.com
+///
+/// NOTE:           All things in this library are defined within the
+///                 blMathAPI namespace
+///
+/// LISENSE:        MIT-LICENCE
+///                 http://www.opensource.org/licenses/mit-license.php
+///
+///
+///
+///-------------------------------------------------------------------
 
-
-//-------------------------------------------------------------------
-// Includes and libs needed for this file
-//-------------------------------------------------------------------
-//-------------------------------------------------------------------
 
 
 //-------------------------------------------------------------------
-// Enums used for this file and sub-files
+// Includes needed for this file
 //-------------------------------------------------------------------
+#include "blNumericFunctions.hpp"
+#include "blPoint2d.hpp"
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// NOTE: This class is defined within the blMathAPI namespace
+//-------------------------------------------------------------------
+namespace blMathAPI
+{
 //-------------------------------------------------------------------
 
 
 //-------------------------------------------------------------------
 // Calculate the L1-norm of a point
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType norm1(const blPoint2d<blDataType>& p)
+template<typename blNumberType>
+inline blNumberType norm1(const blPoint2d<blNumberType>& p)
 {
-    return ( std::abs(p.x()) + std::abs(p.y()) );
+    return ( blMathAPI::abs(p.x()) + blMathAPI::abs(p.y()) );
 }
 //-------------------------------------------------------------------
 
@@ -48,8 +54,8 @@ inline blDataType norm1(const blPoint2d<blDataType>& p)
 //-------------------------------------------------------------------
 // Calculate the L2-norm of a point
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType norm2(const blPoint2d<blDataType>& p)
+template<typename blNumberType>
+inline blNumberType norm2(const blPoint2d<blNumberType>& p)
 {
     return std::sqrt( p.x()*p.x() + p.y()*p.y() );
 }
@@ -59,8 +65,8 @@ inline blDataType norm2(const blPoint2d<blDataType>& p)
 //-------------------------------------------------------------------
 // Calculate the Linf-norm of a point
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType normInf(const blPoint2d<blDataType>& p)
+template<typename blNumberType>
+inline blNumberType normInf(const blPoint2d<blNumberType>& p)
 {
     return std::max(p.x(),p.y());
 }
@@ -70,11 +76,11 @@ inline blDataType normInf(const blPoint2d<blDataType>& p)
 //-------------------------------------------------------------------
 // Calculate the Lp-norm of a point
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType normP(const blPoint2d<blDataType>& point,const int& p)
+template<typename blNumberType>
+inline blNumberType normP(const blPoint2d<blNumberType>& point,const int& p)
 {
-    return std::pow(std::pow(point.x(),p) + std::pow(point.y(),p),
-                    1.0 / double(p));
+    return blMathAPI::power(blMathAPI::power(point.x(),p) + blMathAPI::power(point.y(),p),
+                            1.0 / double(p));
 }
 //-------------------------------------------------------------------
 
@@ -83,8 +89,8 @@ inline blDataType normP(const blPoint2d<blDataType>& point,const int& p)
 // Functions used to normalize a point or to get
 // a normalized point from a given point
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blPoint2d<blDataType>& normalize(blPoint2d<blDataType>& p)
+template<typename blNumberType>
+inline blPoint2d<blNumberType>& normalize(blPoint2d<blNumberType>& p)
 {
     p /= norm2(p);
 
@@ -92,8 +98,8 @@ inline blPoint2d<blDataType>& normalize(blPoint2d<blDataType>& p)
 }
 
 
-template<typename blDataType>
-inline blPoint2d<blDataType> getNormalized(const blPoint2d<blDataType>& p)
+template<typename blNumberType>
+inline blPoint2d<blNumberType> getNormalized(const blPoint2d<blNumberType>& p)
 {
     return (p/norm2(p));
 }
@@ -105,8 +111,8 @@ inline blPoint2d<blDataType> getNormalized(const blPoint2d<blDataType>& p)
 // to a given point such that the dot product
 // would give zero
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blPoint2d<blDataType> getPerpendicularUnitPoint(const blPoint2d<blDataType>& p)
+template<typename blNumberType>
+inline blPoint2d<blNumberType> getPerpendicularUnitPoint(const blPoint2d<blNumberType>& p)
 {
     // Find a component of this
     // Point that is non zero
@@ -118,10 +124,10 @@ inline blPoint2d<blDataType> getPerpendicularUnitPoint(const blPoint2d<blDataTyp
     if(p.x() != 0)
     {
         if(p.y() == 0)
-            return blPoint2d<blDataType>(0,1);
+            return blPoint2d<blNumberType>(0,1);
         else
         {
-            blPoint2d<blDataType> point(1,-p.x()/p.y());
+            blPoint2d<blNumberType> point(1,-p.x()/p.y());
 
             normalize(point);
 
@@ -130,7 +136,7 @@ inline blPoint2d<blDataType> getPerpendicularUnitPoint(const blPoint2d<blDataTyp
     }
     else if(p.y() != 0)
     {
-        return blPoint2d<blDataType>(1,0);
+        return blPoint2d<blNumberType>(1,0);
     }
 
     // The Point was a zero Point,
@@ -139,7 +145,7 @@ inline blPoint2d<blDataType> getPerpendicularUnitPoint(const blPoint2d<blDataTyp
     // are just going to return
     // the zero Point
 
-    return blPoint2d<blDataType>(0,0);
+    return blPoint2d<blNumberType>(0,0);
 }
 //-------------------------------------------------------------------
 
@@ -149,10 +155,10 @@ inline blPoint2d<blDataType> getPerpendicularUnitPoint(const blPoint2d<blDataTyp
 // whose components are fractional
 // inverses of the original point
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blPoint2d<blDataType> getPointWithFractionalInvertedElements(const blPoint2d<blDataType>& p)
+template<typename blNumberType>
+inline blPoint2d<blNumberType> getPointWithFractionalInvertedElements(const blPoint2d<blNumberType>& p)
 {
-    return blPoint2d<blDataType>(blDataType(1)/p.x(),blDataType(1)/p.y());
+    return blPoint2d<blNumberType>(blNumberType(1)/p.x(),blNumberType(1)/p.y());
 }
 //-------------------------------------------------------------------
 
@@ -162,9 +168,9 @@ inline blPoint2d<blDataType> getPointWithFractionalInvertedElements(const blPoin
 // output a point to
 // an output stream
 //-------------------------------------------------------------------
-template<typename blDataType>
+template<typename blNumberType>
 inline std::ostream& operator<<(std::ostream& os,
-                                const blPoint2d<blDataType>& p)
+                                const blPoint2d<blNumberType>& p)
 {
     // We simply output the x and y
     // components with a space
@@ -182,9 +188,9 @@ inline std::ostream& operator<<(std::ostream& os,
 // input a point from
 // an input stream
 //-------------------------------------------------------------------
-template<typename blDataType>
+template<typename blNumberType>
 inline std::istream& operator>>(std::istream& is,
-                                blPoint2d<blDataType>& p)
+                                blPoint2d<blNumberType>& p)
 {
     if(!(is >> p.x()))
     {
@@ -213,45 +219,45 @@ inline std::istream& operator>>(std::istream& is,
 // of each component when comparing
 // multiple points
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline void min(const blPoint2d<blDataType>& p1,
-                const blPoint2d<blDataType>& p2,
-                blPoint2d<blDataType>& minP)
+template<typename blNumberType>
+inline void min(const blPoint2d<blNumberType>& p1,
+                const blPoint2d<blNumberType>& p2,
+                blPoint2d<blNumberType>& minP)
 {
     minP.x = std::min(p1.x(),p2.x());
     minP.y = std::min(p1.y(),p2.y());
 }
 
 
-template<typename blDataType>
-inline void max(const blPoint2d<blDataType>& p1,
-                const blPoint2d<blDataType>& p2,
-                blPoint2d<blDataType>& maxP)
+template<typename blNumberType>
+inline void max(const blPoint2d<blNumberType>& p1,
+                const blPoint2d<blNumberType>& p2,
+                blPoint2d<blNumberType>& maxP)
 {
     maxP.x = std::max(p1.x(),p2.x());
     maxP.y = std::max(p1.y(),p2.y());
 }
 
 
-template<typename blDataType>
-inline blPoint2d<blDataType> min(const blPoint2d<blDataType>& p1,
-                                 const blPoint2d<blDataType>& p2)
+template<typename blNumberType>
+inline blPoint2d<blNumberType> min(const blPoint2d<blNumberType>& p1,
+                                   const blPoint2d<blNumberType>& p2)
 {
-    blPoint2d<blDataType> minP;
+    blPoint2d<blNumberType> minP;
 
-    min(p1,p2,minP);
+    blMathAPI::min(p1,p2,minP);
 
     return minP;
 }
 
 
-template<typename blDataType>
-inline blPoint2d<blDataType> max(const blPoint2d<blDataType>& p1,
-                                 const blPoint2d<blDataType>& p2)
+template<typename blNumberType>
+inline blPoint2d<blNumberType> max(const blPoint2d<blNumberType>& p1,
+                                   const blPoint2d<blNumberType>& p2)
 {
-    blPoint2d<blDataType> maxP;
+    blPoint2d<blNumberType> maxP;
 
-    max(p1,p2,maxP);
+    blMathAPI::max(p1,p2,maxP);
 
     return maxP;
 }
@@ -265,12 +271,12 @@ inline blPoint2d<blDataType> max(const blPoint2d<blDataType>& p1,
 //-------------------------------------------------------------------
 template<typename blStringIteratorType,
          typename blCharacterType,
-         typename blDataType>
+         typename blNumberType>
 
 inline blStringIteratorType convertStringToNumber(const blStringIteratorType& beginIter,
                                                   const blStringIteratorType& endIter,
                                                   const blCharacterType& decimalPointDelimiter,
-                                                  blPoint2d<blDataType>& convertedNumber,
+                                                  blPoint2d<blNumberType>& convertedNumber,
                                                   const int& numberOfTimesToRepeatTheSearchIfBeginIterEqualsEndIter)
 {
     // We expect the
@@ -303,6 +309,14 @@ inline blStringIteratorType convertStringToNumber(const blStringIteratorType& be
     return newStringPosition;
 }
 //-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// End of the blMathAPI namespace
+}
+//-------------------------------------------------------------------
+
 
 
 #endif // BL_POINT2DOPERATIONS_HPP

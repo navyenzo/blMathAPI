@@ -2,65 +2,74 @@
 #define BL_QUATERNIONOPERATIONS_HPP
 
 
-//-------------------------------------------------------------------
-// FILE:            blQuaternionOperantions.hpp
-// CLASS:           None
-// BASE CLASS:      None
-//
-// PURPOSE:         Useful functions for handling quaternions
-//
-// AUTHOR:          Vincenzo Barbato
-//                  http://www.barbatolabs.com
-//                  navyenzo@gmail.com
-//
-// LISENSE:         MIT-LICENCE
-//                  http://www.opensource.org/licenses/mit-license.php
-//
-// DEPENDENCIES:
-//
-// NOTES:
-//-------------------------------------------------------------------
 
+///-------------------------------------------------------------------
+///
+///
+///
+/// PURPOSE:        Useful functions for handling quaternions
+///
+/// AUTHOR:         Vincenzo Barbato
+///                 navyenzo@gmail.com
+///
+/// NOTE:           All things in this library are defined within the
+///                 blMathAPI namespace
+///
+/// LISENSE:        MIT-LICENCE
+///                 http://www.opensource.org/licenses/mit-license.php
+///
+///
+///
+///-------------------------------------------------------------------
 
-//-------------------------------------------------------------------
-// Includes and libs needed for this file
-//-------------------------------------------------------------------
-//-------------------------------------------------------------------
 
 
 //-------------------------------------------------------------------
-// Enums used for this file and sub-files
+// Includes needed for this file
 //-------------------------------------------------------------------
+#include "blQuaternion.hpp"
 //-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// NOTE: This class is defined within the blMathAPI namespace
+//-------------------------------------------------------------------
+namespace blMathAPI
+{
+//-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
 // Calculate the L1-norm of a quaternion
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType norm1(const blQuaternion<blDataType>& q)
+template<typename blNumberType>
+inline blNumberType norm1(const blQuaternion<blNumberType>& q)
 {
-    return ( std::abs(q.w()) + std::abs(q.xyz().x()) + std::abs(q.xyz().y()) + std::abs(q.xyz().z()) );
+    return ( blMathAPI::abs(q.w()) + blMathAPI::abs(q.xyz().x()) + blMathAPI::abs(q.xyz().y()) + blMathAPI::abs(q.xyz().z()) );
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
 // Calculate the L2-norm of a quaternion
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType norm2(const blQuaternion<blDataType>& q)
+template<typename blNumberType>
+inline blNumberType norm2(const blQuaternion<blNumberType>& q)
 {
     return std::sqrt( q.w()*q.w() + q.xyz().x()*q.xyz().x() + q.xyz().y()*q.xyz().y() + q.xyz().z()*q.xyz().z() );
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Calculate the Linf-norm of a quaternion
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType normInf(const blQuaternion<blDataType>& q)
+template<typename blNumberType>
+inline blNumberType normInf(const blQuaternion<blNumberType>& q)
 {
     auto tempMax = std::max(q.w(),q.xyz().x());
     tempMax = std::max(tempMax,q.xyz().y());
@@ -70,24 +79,26 @@ inline blDataType normInf(const blQuaternion<blDataType>& q)
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Calculate the Lp-norm of a quaternion
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType normP(const blQuaternion<blDataType>& q,const int& p)
+template<typename blNumberType>
+inline blNumberType normP(const blQuaternion<blNumberType>& q,const int& p)
 {
-    return std::pow( std::pow(q.w(),p) + std::pow(q.xyz().x(),p) + std::pow(q.xyz().y(),p)+ std::pow(q.xyz().z(),p),
-                    1.0 / double(p) );
+    return blMathAPI::power( blMathAPI::power(q.w(),p) + blMathAPI::power(q.xyz().x(),p) + blMathAPI::power(q.xyz().y(),p)+ blMathAPI::power(q.xyz().z(),p),
+                             1.0 / double(p) );
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
 // Functions used to normalize a quaternion or to get
 // a normalized quaternion from a given quaternion
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blQuaternion<blDataType>& normalize(blQuaternion<blDataType>& q)
+template<typename blNumberType>
+inline blQuaternion<blNumberType>& normalize(blQuaternion<blNumberType>& q)
 {
     q /= norm2(q);
 
@@ -95,57 +106,60 @@ inline blQuaternion<blDataType>& normalize(blQuaternion<blDataType>& q)
 }
 
 
-template<typename blDataType>
-inline blQuaternion<blDataType> getNormalized(const blQuaternion<blDataType>& q)
+template<typename blNumberType>
+inline blQuaternion<blNumberType> getNormalized(const blQuaternion<blNumberType>& q)
 {
     return (q/norm2(q));
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Function used to get the complex
 // conjugate of a quaternion
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blQuaternion<blDataType> getConjugate(const blQuaternion<blDataType>& qtn)
+template<typename blNumberType>
+inline blQuaternion<blNumberType> getConjugate(const blQuaternion<blNumberType>& qtn)
 {
-    return blQuaternion<blDataType>(qtn.w(),-qtn.xyz());
+    return blQuaternion<blNumberType>(qtn.w(),-qtn.xyz());
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
 // Function used to go from euler angles
 // to a quaternion
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline void eulerAnglesToQuaternion(const blVector3d<blDataType>& angles,
-                                    blQuaternion<blDataType>& qtn)
+template<typename blNumberType>
+inline void eulerAnglesToQuaternion(const blVector3d<blNumberType>& angles,
+                                    blQuaternion<blNumberType>& qtn)
 {
-    blQuaternion<blDataType> xQtn(std::cos(angles.x()/blDataType(2)),
-                                  blVector3d<blDataType>(std::sin(angles.x()/blDataType(2)),
-                                                         0,
-                                                         0));
+    blQuaternion<blNumberType> xQtn(std::cos(angles.x()/blNumberType(2)),
+                                    blVector3d<blNumberType>(std::sin(angles.x()/blNumberType(2)),
+                                                             0,
+                                                             0));
 
-    blQuaternion<blDataType> yQtn(std::cos(angles.y()/blDataType(2)),
-                                  blVector3d<blDataType>(0,
-                                                         std::sin(angles.y()/blDataType(2)),
-                                                         0));
+    blQuaternion<blNumberType> yQtn(std::cos(angles.y()/blNumberType(2)),
+                                    blVector3d<blNumberType>(0,
+                                                             std::sin(angles.y()/blNumberType(2)),
+                                                             0));
 
-    blQuaternion<blDataType> zQtn(std::cos(angles.z()/blDataType(2)),
-                                  blVector3d<blDataType>(0,
-                                                         0,
-                                                         std::sin(angles.z()/blDataType(2))));
+    blQuaternion<blNumberType> zQtn(std::cos(angles.z()/blNumberType(2)),
+                                    blVector3d<blNumberType>(0,
+                                                             0,
+                                                             std::sin(angles.z()/blNumberType(2))));
 
     qtn = xQtn*yQtn*zQtn;
 }
 
 
-template<typename blDataType>
-inline blQuaternion<blDataType> eulerAnglesToQuaternion(const blVector3d<blDataType>& angles)
+
+template<typename blNumberType>
+inline blQuaternion<blNumberType> eulerAnglesToQuaternion(const blVector3d<blNumberType>& angles)
 {
-    blQuaternion<blDataType> qtn;
+    blQuaternion<blNumberType> qtn;
 
     eulerAnglesToQuaternion(angles,qtn);
 
@@ -154,13 +168,14 @@ inline blQuaternion<blDataType> eulerAnglesToQuaternion(const blVector3d<blDataT
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Function used to go from a quaternion
 // to euler angles
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline void quaternionToEulerAngles(const blQuaternion<blDataType>& qtn,
-                                    blVector3d<blDataType>& angles)
+template<typename blNumberType>
+inline void quaternionToEulerAngles(const blQuaternion<blNumberType>& qtn,
+                                    blVector3d<blNumberType>& angles)
 {
     angles.x() = std::atan2(2.0*(qtn.w()*qtn.xyz().x() + qtn.xyz().y()*qtn.xyz().z()),
                             1.0 - 2.0*(qtn.xyz().x()*qtn.xyz().x() + qtn.xyz().y()*qtn.xyz().y()));
@@ -172,10 +187,10 @@ inline void quaternionToEulerAngles(const blQuaternion<blDataType>& qtn,
 }
 
 
-template<typename blDataType>
-inline blVector3d<blDataType> quaternionToEulerAngles(const blQuaternion<blDataType>& qtn)
+template<typename blNumberType>
+inline blVector3d<blNumberType> quaternionToEulerAngles(const blQuaternion<blNumberType>& qtn)
 {
-    blVector3d<blDataType> angles;
+    blVector3d<blNumberType> angles;
 
     quaternionToEulerAngles(qtn,angles);
 
@@ -184,30 +199,31 @@ inline blVector3d<blDataType> quaternionToEulerAngles(const blQuaternion<blDataT
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Function used to go from axis/angle
 // to a quaternion
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline void axisAngleToQuaternion(const blVector3d<blDataType>& axis,
-                                  const blDataType& angle,
-                                  blQuaternion<blDataType>& qtn)
+template<typename blNumberType>
+inline void axisAngleToQuaternion(const blVector3d<blNumberType>& axis,
+                                  const blNumberType& angle,
+                                  blQuaternion<blNumberType>& qtn)
 {
     auto normalizedAxis = getNormalized(axis);
 
-    qtn.w() = std::cos(angle/blDataType(2));
+    qtn.w() = std::cos(angle/blNumberType(2));
 
-    blDataType scalar = std::sin(angle/blDataType(2));
+    blNumberType scalar = std::sin(angle/blNumberType(2));
 
     qtn.xyz() = axis * scalar;
 }
 
 
-template<typename blDataType>
-inline blQuaternion<blDataType> axisAngleToQuaternion(const blVector3d<blDataType>& axis,
-                                                      const blDataType& angle)
+template<typename blNumberType>
+inline blQuaternion<blNumberType> axisAngleToQuaternion(const blVector3d<blNumberType>& axis,
+                                                      const blNumberType& angle)
 {
-    blQuaternion<blDataType> qtn;
+    blQuaternion<blNumberType> qtn;
 
     axisAngleToQuaternion(axis,angle,qtn);
 
@@ -216,21 +232,22 @@ inline blQuaternion<blDataType> axisAngleToQuaternion(const blVector3d<blDataTyp
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Function used to go from a quaternion
 // to axis/angle
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline void quaternionToAxisAngle(const blQuaternion<blDataType>& qtn,
-                                  blVector3d<blDataType>& axis,
-                                  blDataType& angle)
+template<typename blNumberType>
+inline void quaternionToAxisAngle(const blQuaternion<blNumberType>& qtn,
+                                  blVector3d<blNumberType>& axis,
+                                  blNumberType& angle)
 {
-    if(qtn.w() == blDataType(1))
+    if(qtn.w() == blNumberType(1))
     {
         // In this case we have
         // no rotation
 
-        angle = blDataType(0);
+        angle = blNumberType(0);
 
         axis = qtn.xyz();
     }
@@ -240,18 +257,18 @@ inline void quaternionToAxisAngle(const blQuaternion<blDataType>& qtn,
 
         auto mag = norm1(qtn.xyz());
 
-        if(mag == blDataType(0))
+        if(mag == blNumberType(0))
         {
             // Magnitude is zero so
             // we set default values
 
             angle = 0;
 
-            axis = blVector3d<blDataType>(1,0,0);
+            axis = blVector3d<blNumberType>(1,0,0);
         }
         else
         {
-            angle = blDataType(2) * std::acos(qtn.w());
+            angle = blNumberType(2) * std::acos(qtn.w());
 
             axis = qtn.xyz() / mag;
         }
@@ -260,15 +277,16 @@ inline void quaternionToAxisAngle(const blQuaternion<blDataType>& qtn,
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Functions used to rotate a vector with
 // a quaternion
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blVector3d<blDataType>& rotateVector(const blQuaternion<blDataType>& rotQtn,
-                                           blVector3d<blDataType>& vectorToRotate)
+template<typename blNumberType>
+inline blVector3d<blNumberType>& rotateVector(const blQuaternion<blNumberType>& rotQtn,
+                                           blVector3d<blNumberType>& vectorToRotate)
 {
-    blQuaternion<blDataType> vectorQtn(0,vectorToRotate);
+    blQuaternion<blNumberType> vectorQtn(0,vectorToRotate);
 
     auto rotQtnConj = getConjugate(rotQtn);
 
@@ -281,13 +299,14 @@ inline blVector3d<blDataType>& rotateVector(const blQuaternion<blDataType>& rotQ
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Function used to
 // output a quaternion
 // to an output stream
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline std::ostream& operator<<(std::ostream& os,const blQuaternion<blDataType>& qtn)
+template<typename blNumberType>
+inline std::ostream& operator<<(std::ostream& os,const blQuaternion<blNumberType>& qtn)
 {
     // We simply output the
     // components with a
@@ -299,14 +318,15 @@ inline std::ostream& operator<<(std::ostream& os,const blQuaternion<blDataType>&
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Function used to
 // input a quaternion
 // from an input stream
 //-------------------------------------------------------------------
-template<typename blDataType>
+template<typename blNumberType>
 inline std::istream& operator>>(std::istream& is,
-                                blQuaternion<blDataType>& qtn)
+                                blQuaternion<blNumberType>& qtn)
 {
     if(!(is >> qtn.w()))
     {
@@ -327,6 +347,7 @@ inline std::istream& operator>>(std::istream& is,
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Function used to
 // convert a generic
@@ -334,12 +355,12 @@ inline std::istream& operator>>(std::istream& is,
 //-------------------------------------------------------------------
 template<typename blStringIteratorType,
          typename blCharacterType,
-         typename blDataType>
+         typename blNumberType>
 inline blStringIteratorType convertStringToNumber(const blStringIteratorType& beginIter,
-                                                    const blStringIteratorType& endIter,
-                                                    const blCharacterType& decimalPointDelimiter,
-                                                    blMathAPI::blQuaternion<blDataType>& convertedNumber,
-                                                    const int& numberOfTimesToRepeatTheSearchIfBeginIterEqualsEndIter)
+                                                  const blStringIteratorType& endIter,
+                                                  const blCharacterType& decimalPointDelimiter,
+                                                  blMathAPI::blQuaternion<blNumberType>& convertedNumber,
+                                                  const int& numberOfTimesToRepeatTheSearchIfBeginIterEqualsEndIter)
 {
     // We expect the
     // following format:
@@ -371,6 +392,14 @@ inline blStringIteratorType convertStringToNumber(const blStringIteratorType& be
     return newStringPosition;
 }
 //-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// End of the blMathAPI namespace
+}
+//-------------------------------------------------------------------
+
 
 
 #endif // BL_QUATERNIONOPERATIONS_HPP

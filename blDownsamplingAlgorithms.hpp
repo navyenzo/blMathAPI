@@ -2,38 +2,42 @@
 #define BL_DOWNSAMPLINGALGORITHMS_HPP
 
 
-
-//-------------------------------------------------------------------
-// FILE:            blDownsamplingAlgorithms.hpp
-// CLASS:           None
-// BASE CLASS:      None
-//
-// PURPOSE:         A collection of "downsampling"
-//                  algorithms for visualizing
-//                  large data sets
-//
-// AUTHOR:          Vincenzo Barbato
-//                  http://www.barbatolabs.com
-//                  navyenzo@gmail.com
-//
-// LISENSE:         MIT-LICENCE
-//                  http://www.opensource.org/licenses/mit-license.php
-//
-// DEPENDENCIES:
-//
-// NOTES:
-//
-// DATE CREATED:    Feb/21/2014
-//
-// DATE UPDATED:
-//-------------------------------------------------------------------
+///-------------------------------------------------------------------
+///
+///
+///
+/// PURPOSE:        A collection of "downsampling" algorithms for
+///                 visualizing and/or analyzing large data sets
+///
+/// AUTHOR:         Vincenzo Barbato
+///                 navyenzo@gmail.com
+///
+/// NOTE:           All things in this library are defined within the
+///                 blMathAPI namespace
+///
+/// LISENSE:        MIT-LICENCE
+///                 http://www.opensource.org/licenses/mit-license.php
+///
+///
+///
+///-------------------------------------------------------------------
 
 
 
 //-------------------------------------------------------------------
-// Includes and libs needed for this file and sub-files
+// Includes needed for this file
 //-------------------------------------------------------------------
 #include <iterator>
+#include "blNumericFunctions.hpp"
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// NOTE: This class is defined within the blMathAPI namespace
+//-------------------------------------------------------------------
+namespace blMathAPI
+{
 //-------------------------------------------------------------------
 
 
@@ -254,7 +258,7 @@ inline void largestTriangleThreeBuckets(srcDataIteratorType srcDataBegin,
 
             for(std::size_t i = 0; i < bucketStep; ++i)
             {
-                currentTriangleArea = std::abs( (nextBucketAvgValue - previousBucketPoint) + two*(previousBucketPoint - (*srcCurrentBucketIterator)) ) / two;
+                currentTriangleArea = blMathAPI::abs( (nextBucketAvgValue - previousBucketPoint) + two*(previousBucketPoint - (*srcCurrentBucketIterator)) ) / two;
 
                 if(currentTriangleArea > maxTriangleArea)
                 {
@@ -445,7 +449,7 @@ inline void largestTriangleThreeBuckets(xSrcDataIteratorType xSrcDataBegin,
 
             for(std::size_t i = 0; i < bucketStep; ++i)
             {
-                currentTriangleArea = std::abs( (yNextBucketAvgValue - yPreviousBucketPoint) + two*(yPreviousBucketPoint - (*ySrcCurrentBucketIterator)) ) / two;
+                currentTriangleArea = blMathAPI::abs( (yNextBucketAvgValue - yPreviousBucketPoint) + two*(yPreviousBucketPoint - (*ySrcCurrentBucketIterator)) ) / two;
 
                 if(currentTriangleArea > maxTriangleArea)
                 {
@@ -465,6 +469,13 @@ inline void largestTriangleThreeBuckets(xSrcDataIteratorType xSrcDataBegin,
         ++xDstDataBegin;
         ++yDstDataBegin;
     }
+}
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// End of the blMathAPI namespace
 }
 //-------------------------------------------------------------------
 

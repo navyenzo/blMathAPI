@@ -2,65 +2,73 @@
 #define BL_VECTOR3DOPERATIONS_HPP
 
 
-//-------------------------------------------------------------------
-// FILE:            blVector3dOperations.hpp
-// CLASS:           None
-// BASE CLASS:      None
-//
-// PURPOSE:         Useful functions for handling vectors
-//
-// AUTHOR:          Vincenzo Barbato
-//                  http://www.barbatolabs.com
-//                  navyenzo@gmail.com
-//
-// LISENSE:         MIT-LICENCE
-//                  http://www.opensource.org/licenses/mit-license.php
-//
-// DEPENDENCIES:
-//
-// NOTES:
-//-------------------------------------------------------------------
+///-------------------------------------------------------------------
+///
+///
+///
+/// PURPOSE:        Useful functions for handling 3d vector
+///
+/// AUTHOR:         Vincenzo Barbato
+///                 navyenzo@gmail.com
+///
+/// NOTE:           All things in this library are defined within the
+///                 blMathAPI namespace
+///
+/// LISENSE:        MIT-LICENCE
+///                 http://www.opensource.org/licenses/mit-license.php
+///
+///
+///
+///-------------------------------------------------------------------
 
-
-//-------------------------------------------------------------------
-// Includes and libs needed for this file
-//-------------------------------------------------------------------
-//-------------------------------------------------------------------
 
 
 //-------------------------------------------------------------------
-// Enums used for this file and sub-files
+// Includes needed for this file
 //-------------------------------------------------------------------
+#include "blVector3d.hpp"
 //-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// NOTE: This class is defined within the blMathAPI namespace
+//-------------------------------------------------------------------
+namespace blMathAPI
+{
+//-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
 // Calculate the L1-norm of a vector
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType norm1(const blVector3d<blDataType>& v)
+template<typename blNumberType>
+inline blNumberType norm1(const blVector3d<blNumberType>& v)
 {
-    return ( std::abs(v.x()) + std::abs(v.y()) + std::abs(v.z()) );
+    return ( blMathAPI::abs(v.x()) + blMathAPI::abs(v.y()) + blMathAPI::abs(v.z()) );
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
 // Calculate the L2-norm of a vector
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType norm2(const blVector3d<blDataType>& v)
+template<typename blNumberType>
+inline blNumberType norm2(const blVector3d<blNumberType>& v)
 {
     return std::sqrt( v.x()*v.x() + v.y()*v.y() + v.z()*v.z() );
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Calculate the Linf-norm of a vector
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType normInf(const blVector3d<blDataType>& v)
+template<typename blNumberType>
+inline blNumberType normInf(const blVector3d<blNumberType>& v)
 {
     auto tempMax = std::max(v.x(),v.y());
 
@@ -69,24 +77,26 @@ inline blDataType normInf(const blVector3d<blDataType>& v)
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Calculate the Lp-norm of a vector
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType normP(const blVector3d<blDataType>& v,const int& p)
+template<typename blNumberType>
+inline blNumberType normP(const blVector3d<blNumberType>& v,const int& p)
 {
-    return std::pow(std::pow(v.x(),p) + std::pow(v.y(),p)+ std::pow(v.z(),p),
-                    1.0 / double(p));
+    return blMathAPI::power(blMathAPI::power(v.x(),p) + blMathAPI::power(v.y(),p)+ blMathAPI::power(v.z(),p),
+                            1.0 / double(p));
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
 // Functions used to normalize a vector or to get
 // a normalized vector from a given vector
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blVector3d<blDataType>& normalize(blVector3d<blDataType>& v)
+template<typename blNumberType>
+inline blVector3d<blNumberType>& normalize(blVector3d<blNumberType>& v)
 {
     v /= norm2(v);
 
@@ -94,12 +104,13 @@ inline blVector3d<blDataType>& normalize(blVector3d<blDataType>& v)
 }
 
 
-template<typename blDataType>
-inline blVector3d<blDataType> getNormalized(const blVector3d<blDataType>& v)
+template<typename blNumberType>
+inline blVector3d<blNumberType> getNormalized(const blVector3d<blNumberType>& v)
 {
     return (v/norm2(v));
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
@@ -107,8 +118,8 @@ inline blVector3d<blDataType> getNormalized(const blVector3d<blDataType>& v)
 // to a given vector such that the dot product
 // would give zero
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blVector3d<blDataType> getPerpendicularUnitVector(const blVector3d<blDataType>& v)
+template<typename blNumberType>
+inline blVector3d<blNumberType> getPerpendicularUnitVector(const blVector3d<blNumberType>& v)
 {
     // Find a component of this
     // vector that is non zero
@@ -120,16 +131,16 @@ inline blVector3d<blDataType> getPerpendicularUnitVector(const blVector3d<blData
     if(v.x() != 0)
     {
         if(v.y() == 0)
-            return blVector3d<blDataType>(0,1,0);
+            return blVector3d<blNumberType>(0,1,0);
         else
         {
             if(v.z() == 0)
             {
-                return blVector3d<blDataType>(0,0,1);
+                return blVector3d<blNumberType>(0,0,1);
             }
             else
             {
-                blVector3d<blDataType> vector( 1, 1, -(v.x() + v.y())/v.z() );
+                blVector3d<blNumberType> vector( 1, 1, -(v.x() + v.y())/v.z() );
 
                 normalize(vector);
 
@@ -139,7 +150,7 @@ inline blVector3d<blDataType> getPerpendicularUnitVector(const blVector3d<blData
     }
     else if(v.y() != 0 || v.z() != 0)
     {
-        return blVector3d<blDataType>(1,0,0);
+        return blVector3d<blNumberType>(1,0,0);
     }
 
     // The vector was a zero
@@ -148,9 +159,10 @@ inline blVector3d<blDataType> getPerpendicularUnitVector(const blVector3d<blData
     // thus we are just going
     // to return the zero vector
 
-    return blVector3d<blDataType>(0,0,0);
+    return blVector3d<blNumberType>(0,0,0);
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
@@ -158,27 +170,29 @@ inline blVector3d<blDataType> getPerpendicularUnitVector(const blVector3d<blData
 // whose components are fractional
 // inverses of the original vector
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blVector3d<blDataType> getVectorWithFractionalInvertedElements(const blVector3d<blDataType>& v)
+template<typename blNumberType>
+inline blVector3d<blNumberType> getVectorWithFractionalInvertedElements(const blVector3d<blNumberType>& v)
 {
-    return blVector3d<blDataType>(blDataType(1)/v.x(),blDataType(1)/v.y(),blDataType(1)/v.z());
+    return blVector3d<blNumberType>(blNumberType(1)/v.x(),blNumberType(1)/v.y(),blNumberType(1)/v.z());
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
 // Function used to take the cross
 // product of two vectors
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blVector3d<blDataType> crossProduct(const blVector3d<blDataType>& v1,
-                                           const blVector3d<blDataType>& v2)
+template<typename blNumberType>
+inline blVector3d<blNumberType> crossProduct(const blVector3d<blNumberType>& v1,
+                                             const blVector3d<blNumberType>& v2)
 {
-    return blVector3d<blDataType>(v1.y()*v2.z() - v1.z()*v2.y(),
+    return blVector3d<blNumberType>(v1.y()*v2.z() - v1.z()*v2.y(),
                                   -v1.x()*v2.z() + v1.z()*v2.x(),
                                   v1.x()*v2.y() - v1.y()*v2.x());
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
@@ -186,9 +200,9 @@ inline blVector3d<blDataType> crossProduct(const blVector3d<blDataType>& v1,
 // output a vector to
 // an output stream
 //-------------------------------------------------------------------
-template<typename blDataType>
+template<typename blNumberType>
 inline std::ostream& operator<<(std::ostream& os,
-                                const blVector3d<blDataType>& v)
+                                const blVector3d<blNumberType>& v)
 {
     // We simply output the x and y
     // components with a space
@@ -201,14 +215,15 @@ inline std::ostream& operator<<(std::ostream& os,
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Function used to
 // input a point from
 // an input stream
 //-------------------------------------------------------------------
-template<typename blDataType>
+template<typename blNumberType>
 inline std::istream& operator>>(std::istream& is,
-                                blVector3d<blDataType>& v)
+                                blVector3d<blNumberType>& v)
 {
     if(!(is >> v.x()))
     {
@@ -239,16 +254,17 @@ inline std::istream& operator>>(std::istream& is,
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Functions used to return a vector
 // with the minimum or maximum values
 // of each component when comparing
 // multiple vector
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline void min(const blVector3d<blDataType>& v1,
-                const blVector3d<blDataType>& v2,
-                blVector3d<blDataType>& minV)
+template<typename blNumberType>
+inline void min(const blVector3d<blNumberType>& v1,
+                const blVector3d<blNumberType>& v2,
+                blVector3d<blNumberType>& minV)
 {
     minV.x = std::min(v1.x(),v2.x());
     minV.y = std::min(v1.y(),v2.y());
@@ -256,10 +272,10 @@ inline void min(const blVector3d<blDataType>& v1,
 }
 
 
-template<typename blDataType>
-inline void max(const blVector3d<blDataType>& v1,
-                const blVector3d<blDataType>& v2,
-                blVector3d<blDataType>& maxV)
+template<typename blNumberType>
+inline void max(const blVector3d<blNumberType>& v1,
+                const blVector3d<blNumberType>& v2,
+                blVector3d<blNumberType>& maxV)
 {
     maxV.x = std::max(v1.x(),v2.x());
     maxV.y = std::max(v1.y(),v2.y());
@@ -267,29 +283,30 @@ inline void max(const blVector3d<blDataType>& v1,
 }
 
 
-template<typename blDataType>
-inline blVector3d<blDataType> min(const blVector3d<blDataType>& v1,
-                                  const blVector3d<blDataType>& v2)
+template<typename blNumberType>
+inline blVector3d<blNumberType> min(const blVector3d<blNumberType>& v1,
+                                    const blVector3d<blNumberType>& v2)
 {
-    blVector3d<blDataType> minV;
+    blVector3d<blNumberType> minV;
 
-    min(v1,v2,minV);
+    blMathAPI::min(v1,v2,minV);
 
     return minV;
 }
 
 
-template<typename blDataType>
-inline blVector3d<blDataType> max(const blVector3d<blDataType>& v1,
-                                  const blVector3d<blDataType>& v2)
+template<typename blNumberType>
+inline blVector3d<blNumberType> max(const blVector3d<blNumberType>& v1,
+                                    const blVector3d<blNumberType>& v2)
 {
-    blVector3d<blDataType> maxV;
+    blVector3d<blNumberType> maxV;
 
-    max(v1,v2,maxV);
+    blMathAPI::max(v1,v2,maxV);
 
     return maxV;
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
@@ -299,12 +316,12 @@ inline blVector3d<blDataType> max(const blVector3d<blDataType>& v1,
 //-------------------------------------------------------------------
 template<typename blStringIteratorType,
          typename blCharacterType,
-         typename blDataType>
+         typename blNumberType>
 
 inline blStringIteratorType convertStringToNumber(const blStringIteratorType& beginIter,
                                                   const blStringIteratorType& endIter,
                                                   const blCharacterType& decimalPointDelimiter,
-                                                  blVector3d<blDataType>& convertedNumber,
+                                                  blVector3d<blNumberType>& convertedNumber,
                                                   const int& numberOfTimesToRepeatTheSearchIfBeginIterEqualsEndIter)
 {
     // We expect the
@@ -349,6 +366,14 @@ inline blStringIteratorType convertStringToNumber(const blStringIteratorType& be
     return newStringPosition;
 }
 //-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// End of the blMathAPI namespace
+}
+//-------------------------------------------------------------------
+
 
 
 #endif // BL_VECTOR3DOPERATIONS_HPP

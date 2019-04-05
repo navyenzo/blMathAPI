@@ -2,105 +2,118 @@
 #define BL_POINT2D_HPP
 
 
-//-------------------------------------------------------------------
-// FILE:            blPoint2d.hpp
-// CLASS:           blPoint2d
-// BASE CLASS:      None
-//
-// PURPOSE:         A simple 2d point class
-//
-// AUTHOR:          Vincenzo Barbato
-//                  http://www.barbatolabs.com
-//                  navyenzo@gmail.com
-//
-// LISENSE:         MIT-LICENCE
-//                  http://www.opensource.org/licenses/mit-license.php
-//
-// DEPENDENCIES:
-//
-// NOTES:
-//-------------------------------------------------------------------
+///-------------------------------------------------------------------
+///
+///
+///
+/// PURPOSE:        A simple 2d point class
+///
+/// AUTHOR:         Vincenzo Barbato
+///                 navyenzo@gmail.com
+///
+/// NOTE:           All things in this library are defined within the
+///                 blMathAPI namespace
+///
+/// LISENSE:        MIT-LICENCE
+///                 http://www.opensource.org/licenses/mit-license.php
+///
+///
+///
+///-------------------------------------------------------------------
 
-
-//-------------------------------------------------------------------
-// Includes and libs needed for this file
-//-------------------------------------------------------------------
-//-------------------------------------------------------------------
 
 
 //-------------------------------------------------------------------
-// Enums used for this file and sub-files
+// NOTE: This class is defined within the blMathAPI namespace
 //-------------------------------------------------------------------
+namespace blMathAPI
+{
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
+template<typename blNumberType>
 class blPoint2d
 {
 public: // Constructors and destructors
 
+
+
     // Default constructor
 
-    blPoint2d(const blDataType& x = 0,const blDataType& y = 0);
+    blPoint2d(const blNumberType& x = 0,const blNumberType& y = 0);
 
     // Copy constructor
 
-    template<typename blDataType2>
-    blPoint2d(const blPoint2d<blDataType2>& point);
+    template<typename blNumberType2>
+    blPoint2d(const blPoint2d<blNumberType2>& point);
 
     // Destructor
 
     ~blPoint2d();
 
+
+
 public: // Overloaded operators
 
-    template<typename blDataType2>
-    blPoint2d<blDataType>&          operator=(const blPoint2d<blDataType2>& point);
+    template<typename blNumberType2>
+    blPoint2d<blNumberType>&                operator=(const blPoint2d<blNumberType2>& point);
 
-    bool                            operator==(const blPoint2d<blDataType>& point)const;
-    bool                            operator!=(const blPoint2d<blDataType>& point)const;
+    bool                                    operator==(const blPoint2d<blNumberType>& point)const;
+    bool                                    operator!=(const blPoint2d<blNumberType>& point)const;
 
-    const blPoint2d<blDataType>     operator-()const;
-    blPoint2d<blDataType>&          operator+=(const blPoint2d<blDataType>& point);
-    blPoint2d<blDataType>&          operator-=(const blPoint2d<blDataType>& point);
-    blPoint2d<blDataType>&          operator*=(const blDataType& scalar);
-    blPoint2d<blDataType>&          operator/=(const blDataType& scalar);
+    const blPoint2d<blNumberType>           operator-()const;
+    blPoint2d<blNumberType>&                operator+=(const blPoint2d<blNumberType>& point);
+    blPoint2d<blNumberType>&                operator-=(const blPoint2d<blNumberType>& point);
+    blPoint2d<blNumberType>&                operator*=(const blNumberType& scalar);
+    blPoint2d<blNumberType>&                operator/=(const blNumberType& scalar);
 
-    const blPoint2d<blDataType>     operator+(const blPoint2d<blDataType>& point)const;
-    const blPoint2d<blDataType>     operator-(const blPoint2d<blDataType>& point)const;
-    const blPoint2d<blDataType>     operator*(const blDataType& scalar)const;
-    const blPoint2d<blDataType>     operator/(const blDataType& scalar)const;
+    const blPoint2d<blNumberType>           operator+(const blPoint2d<blNumberType>& point)const;
+    const blPoint2d<blNumberType>           operator-(const blPoint2d<blNumberType>& point)const;
+    const blPoint2d<blNumberType>           operator*(const blNumberType& scalar)const;
+    const blPoint2d<blNumberType>           operator/(const blNumberType& scalar)const;
+
+
 
     // Dot product
 
-    const blDataType                operator*(const blPoint2d<blDataType>& point)const;
+    const blNumberType                      operator*(const blPoint2d<blNumberType>& point)const;
+
+
 
 public: // Public functions
+
+
 
     // Functions used to get/set
     // the point's coordinates
 
-    const blDataType&               x()const;
-    const blDataType&               y()const;
+    const blNumberType&                     x()const;
+    const blNumberType&                     y()const;
 
-    blDataType&                     x();
-    blDataType&                     y();
+    blNumberType&                           x();
+    blNumberType&                           y();
+
+
 
 private: // Private variables
+
+
 
     // The point's x and y
     // coordinates
 
-    blDataType                      m_x;
-    blDataType                      m_y;
+    blNumberType                            m_x;
+    blNumberType                            m_y;
 };
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blPoint2d<blDataType>::blPoint2d(const blDataType& x,const blDataType& y)
+template<typename blNumberType>
+inline blPoint2d<blNumberType>::blPoint2d(const blNumberType& x,const blNumberType& y)
 {
     m_x = x;
     m_y = y;
@@ -108,34 +121,37 @@ inline blPoint2d<blDataType>::blPoint2d(const blDataType& x,const blDataType& y)
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-template<typename blDataType2>
-inline blPoint2d<blDataType>::blPoint2d(const blPoint2d<blDataType2>& point)
+template<typename blNumberType>
+template<typename blNumberType2>
+inline blPoint2d<blNumberType>::blPoint2d(const blPoint2d<blNumberType2>& point)
 {
-    m_x = static_cast<blDataType>(point.x());
-    m_y = static_cast<blDataType>(point.y());
+    m_x = static_cast<blNumberType>(point.x());
+    m_y = static_cast<blNumberType>(point.y());
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blPoint2d<blDataType>::~blPoint2d(void)
+template<typename blNumberType>
+inline blPoint2d<blNumberType>::~blPoint2d(void)
 {
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-template<typename blDataType2>
-inline blPoint2d<blDataType>& blPoint2d<blDataType>::operator=(const blPoint2d<blDataType2>& point)
+template<typename blNumberType>
+template<typename blNumberType2>
+inline blPoint2d<blNumberType>& blPoint2d<blNumberType>::operator=(const blPoint2d<blNumberType2>& point)
 {
     if(this != &point)
     {
-        m_x = static_cast<blDataType>(point.x());
-        m_y = static_cast<blDataType>(point.y());
+        m_x = static_cast<blNumberType>(point.x());
+        m_y = static_cast<blNumberType>(point.y());
     }
 
     return (*this);
@@ -143,54 +159,60 @@ inline blPoint2d<blDataType>& blPoint2d<blDataType>::operator=(const blPoint2d<b
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline const blDataType& blPoint2d<blDataType>::x()const
+template<typename blNumberType>
+inline const blNumberType& blPoint2d<blNumberType>::x()const
 {
     return m_x;
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline const blDataType& blPoint2d<blDataType>::y()const
+template<typename blNumberType>
+inline const blNumberType& blPoint2d<blNumberType>::y()const
 {
     return m_y;
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType& blPoint2d<blDataType>::x()
+template<typename blNumberType>
+inline blNumberType& blPoint2d<blNumberType>::x()
 {
     return m_x;
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType& blPoint2d<blDataType>::y()
+template<typename blNumberType>
+inline blNumberType& blPoint2d<blNumberType>::y()
 {
     return m_y;
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline const blPoint2d<blDataType> blPoint2d<blDataType>::operator-()const
+template<typename blNumberType>
+inline const blPoint2d<blNumberType> blPoint2d<blNumberType>::operator-()const
 {
-    return blPoint2d<blDataType>(-m_x,-m_y);
+    return blPoint2d<blNumberType>(-m_x,-m_y);
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline bool blPoint2d<blDataType>::operator==(const blPoint2d<blDataType>& point)const
+template<typename blNumberType>
+inline bool blPoint2d<blNumberType>::operator==(const blPoint2d<blNumberType>& point)const
 {
     // Check the components
 
@@ -208,9 +230,10 @@ inline bool blPoint2d<blDataType>::operator==(const blPoint2d<blDataType>& point
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline bool blPoint2d<blDataType>::operator!=(const blPoint2d<blDataType>& point)const
+template<typename blNumberType>
+inline bool blPoint2d<blNumberType>::operator!=(const blPoint2d<blNumberType>& point)const
 {
     // Check the components
 
@@ -228,9 +251,10 @@ inline bool blPoint2d<blDataType>::operator!=(const blPoint2d<blDataType>& point
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blPoint2d<blDataType>& blPoint2d<blDataType>::operator+=(const blPoint2d<blDataType>& point)
+template<typename blNumberType>
+inline blPoint2d<blNumberType>& blPoint2d<blNumberType>::operator+=(const blPoint2d<blNumberType>& point)
 {
     m_x += point.x();
     m_y += point.y();
@@ -240,9 +264,10 @@ inline blPoint2d<blDataType>& blPoint2d<blDataType>::operator+=(const blPoint2d<
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blPoint2d<blDataType>& blPoint2d<blDataType>::operator-=(const blPoint2d<blDataType>& point)
+template<typename blNumberType>
+inline blPoint2d<blNumberType>& blPoint2d<blNumberType>::operator-=(const blPoint2d<blNumberType>& point)
 {
     m_x -= point.x();
     m_y -= point.y();
@@ -252,9 +277,10 @@ inline blPoint2d<blDataType>& blPoint2d<blDataType>::operator-=(const blPoint2d<
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blPoint2d<blDataType>& blPoint2d<blDataType>::operator*=(const blDataType& scalar)
+template<typename blNumberType>
+inline blPoint2d<blNumberType>& blPoint2d<blNumberType>::operator*=(const blNumberType& scalar)
 {
     m_x *= scalar;
     m_y *= scalar;
@@ -264,9 +290,10 @@ inline blPoint2d<blDataType>& blPoint2d<blDataType>::operator*=(const blDataType
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blPoint2d<blDataType>& blPoint2d<blDataType>::operator/=(const blDataType& scalar)
+template<typename blNumberType>
+inline blPoint2d<blNumberType>& blPoint2d<blNumberType>::operator/=(const blNumberType& scalar)
 {
     m_x /= scalar;
     m_y /= scalar;
@@ -276,58 +303,73 @@ inline blPoint2d<blDataType>& blPoint2d<blDataType>::operator/=(const blDataType
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blPoint2d<blDataType> operator*(const blDataType& scalar,
-                                       const blPoint2d<blDataType>& point)
+template<typename blNumberType>
+inline blPoint2d<blNumberType> operator*(const blNumberType& scalar,
+                                       const blPoint2d<blNumberType>& point)
 {
     return point * scalar;
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline const blPoint2d<blDataType> blPoint2d<blDataType>::operator*(const blDataType& scalar)const
+template<typename blNumberType>
+inline const blPoint2d<blNumberType> blPoint2d<blNumberType>::operator*(const blNumberType& scalar)const
 {
-    return blPoint2d<blDataType>(x * scalar,y * scalar);
+    return blPoint2d<blNumberType>(m_x * scalar,m_y * scalar);
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline const blPoint2d<blDataType> blPoint2d<blDataType>::operator/(const blDataType& scalar)const
+template<typename blNumberType>
+inline const blPoint2d<blNumberType> blPoint2d<blNumberType>::operator/(const blNumberType& scalar)const
 {
-    return blPoint2d<blDataType>(x / scalar,y / scalar);
+    return blPoint2d<blNumberType>(m_x / scalar,m_y / scalar);
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline const blPoint2d<blDataType> blPoint2d<blDataType>::operator+(const blPoint2d<blDataType>& point)const
+template<typename blNumberType>
+inline const blPoint2d<blNumberType> blPoint2d<blNumberType>::operator+(const blPoint2d<blNumberType>& point)const
 {
-    return blPoint2d<blDataType>(x + point.x,y + point.y);
+    return blPoint2d<blNumberType>(m_x + point.x(),m_y + point.y());
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline const blPoint2d<blDataType> blPoint2d<blDataType>::operator-(const blPoint2d<blDataType>& point)const
+template<typename blNumberType>
+inline const blPoint2d<blNumberType> blPoint2d<blNumberType>::operator-(const blPoint2d<blNumberType>& point)const
 {
-    return blPoint2d<blDataType>(x - point.x,y - point.y);
+    return blPoint2d<blNumberType>(m_x - point.x(),m_y - point.y());
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline const blDataType blPoint2d<blDataType>::operator*(const blPoint2d<blDataType>& point)const
+template<typename blNumberType>
+inline const blNumberType blPoint2d<blNumberType>::operator*(const blPoint2d<blNumberType>& point)const
 {
-    return (x * point.x + y * point.y);
+    return (m_x * point.x() + m_y * point.y());
 }
 //-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// End of the blMathAPI namespace
+}
+//-------------------------------------------------------------------
+
+
 
 #endif // BL_POINT2D_HPP

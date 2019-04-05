@@ -2,67 +2,74 @@
 #define BL_VECTOR3D_HPP
 
 
-//-------------------------------------------------------------------
-// FILE:            blVector3d.hpp
-// CLASS:           blVector3d
-// BASE CLASS:      None
-//
-// PURPOSE:         A simple 3d vector class
-//
-// AUTHOR:          Vincenzo Barbato
-//                  http://www.barbatolabs.com
-//                  navyenzo@gmail.com
-//
-// LISENSE:         MIT-LICENCE
-//                  http://www.opensource.org/licenses/mit-license.php
-//
-// DEPENDENCIES:    - std::abs -- To calculate norms
-//                  - std::sqrt -- To calculate magnitude
-//                  - iostream -- To output to the console
-// NOTES:           - This 3d vector class has an additional operator
-//                    defined in this file that allows multiplying a
-//                    scalar by a 3d vector
-//                  - CrossProduct -- Defined in this file to take the
-//                                    cross product of two vectors
-//
-// DATE CREATED:    Mar/30/2010
-// DATE UPDATED:
-//-------------------------------------------------------------------
+
+///-------------------------------------------------------------------
+///
+///
+///
+/// PURPOSE:        A simple 3d vector class
+///
+/// AUTHOR:         Vincenzo Barbato
+///                 navyenzo@gmail.com
+///
+/// NOTE:           All things in this library are defined within the
+///                 blMathAPI namespace
+///
+/// LISENSE:        MIT-LICENCE
+///                 http://www.opensource.org/licenses/mit-license.php
+///
+///
+///
+///-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
-// Includes and libs needed for this file
+// Includes needed for this file
 //-------------------------------------------------------------------
-//-------------------------------------------------------------------
-
-
-//-------------------------------------------------------------------
-// Enums used for this file and sub-files
-//-------------------------------------------------------------------
+#include "blPoint2dOperations.hpp"
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
+// NOTE: This class is defined within the blMathAPI namespace
+//-------------------------------------------------------------------
+namespace blMathAPI
+{
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+template<typename blNumberType>
 class blVector3d
 {
 public: // Constructors and destructors
 
+
+
     // Default constructor
 
-    blVector3d(const blDataType& x = 0,
-               const blDataType& y = 0,
-               const blDataType& z = 0);
+    blVector3d(const blNumberType& x = 0,
+               const blNumberType& y = 0,
+               const blNumberType& z = 0);
+
+
 
     // Copy constructor
 
-    template<typename blDataType2>
-    blVector3d(const blVector3d<blDataType2>& vector);
+    template<typename blNumberType2>
+    blVector3d(const blVector3d<blNumberType2>& vector);
+
+
 
     // Constructor from a point
 
-    template<typename blDataType2>
-    blVector3d(const blPoint2d<blDataType2>& point);
+    template<typename blNumberType2>
+    blVector3d(const blPoint2d<blNumberType2>& point);
+
+
 
     // Destructor
 
@@ -70,62 +77,77 @@ public: // Constructors and destructors
     {
     }
 
+
+
 public: // Overloaded operators
 
-    template<typename blDataType2>
-    blVector3d<blDataType>&         operator=(const blVector3d<blDataType2>& vector);
 
-    template<typename blDataType2>
-    blVector3d<blDataType>&         operator=(const blPoint2d<blDataType2>& point);
 
-    bool                            operator==(const blVector3d<blDataType>& vector)const;
-    bool                            operator!=(const blVector3d<blDataType>& vector)const;
+    template<typename blNumberType2>
+    blVector3d<blNumberType>&               operator=(const blVector3d<blNumberType2>& vector);
 
-    const blVector3d<blDataType>    operator-()const;
-    blVector3d<blDataType>&         operator+=(const blVector3d<blDataType>& vector);
-    blVector3d<blDataType>&         operator-=(const blVector3d<blDataType>& vector);
-    blVector3d<blDataType>&         operator*=(const blDataType& scalar);
-    blVector3d<blDataType>&         operator/=(const blDataType& scalar);
+    template<typename blNumberType2>
+    blVector3d<blNumberType>&               operator=(const blPoint2d<blNumberType2>& point);
 
-    const blVector3d<blDataType>    operator+(const blVector3d<blDataType>& vector)const;
-    const blVector3d<blDataType>    operator-(const blVector3d<blDataType>& vector)const;
-    const blVector3d<blDataType>    operator*(const blDataType& scalar)const;
-    const blVector3d<blDataType>    operator/(const blDataType& scalar)const;
+    bool                                    operator==(const blVector3d<blNumberType>& vector)const;
+    bool                                    operator!=(const blVector3d<blNumberType>& vector)const;
+
+    const blVector3d<blNumberType>          operator-()const;
+    blVector3d<blNumberType>&               operator+=(const blVector3d<blNumberType>& vector);
+    blVector3d<blNumberType>&               operator-=(const blVector3d<blNumberType>& vector);
+    blVector3d<blNumberType>&               operator*=(const blNumberType& scalar);
+    blVector3d<blNumberType>&               operator/=(const blNumberType& scalar);
+
+    const blVector3d<blNumberType>          operator+(const blVector3d<blNumberType>& vector)const;
+    const blVector3d<blNumberType>          operator-(const blVector3d<blNumberType>& vector)const;
+    const blVector3d<blNumberType>          operator*(const blNumberType& scalar)const;
+    const blVector3d<blNumberType>          operator/(const blNumberType& scalar)const;
+
+
 
     // Dot product
 
-    blDataType                      operator*(const blVector3d<blDataType>& vector)const;
+    blNumberType                            operator*(const blVector3d<blNumberType>& vector)const;
+
+
 
 public: // Public functions
+
+
 
     // Functions used to get/set the
     // vector's components
 
-    const blDataType&               x()const;
-    const blDataType&               y()const;
-    const blDataType&               z()const;
+    const blNumberType&                     x()const;
+    const blNumberType&                     y()const;
+    const blNumberType&                     z()const;
 
-    blDataType&                     x();
-    blDataType&                     y();
-    blDataType&                     z();
+    blNumberType&                           x();
+    blNumberType&                           y();
+    blNumberType&                           z();
+
+
 
 private: // Private variables
+
+
 
     // The vector's x,y
     // and z coordinates
 
-    blDataType                      m_x;
-    blDataType                      m_y;
-    blDataType                      m_z;
+    blNumberType                            m_x;
+    blNumberType                            m_y;
+    blNumberType                            m_z;
 };
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blVector3d<blDataType>::blVector3d(const blDataType& x,
-                                          const blDataType& y,
-                                          const blDataType& z)
+template<typename blNumberType>
+inline blVector3d<blNumberType>::blVector3d(const blNumberType& x,
+                                          const blNumberType& y,
+                                          const blNumberType& z)
 {
     m_x = x;
     m_y = y;
@@ -134,40 +156,43 @@ inline blVector3d<blDataType>::blVector3d(const blDataType& x,
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-template<typename blDataType2>
-inline blVector3d<blDataType>::blVector3d(const blVector3d<blDataType2>& vector)
+template<typename blNumberType>
+template<typename blNumberType2>
+inline blVector3d<blNumberType>::blVector3d(const blVector3d<blNumberType2>& vector)
 {
-    m_x = static_cast<blDataType>(vector.x());
-    m_y = static_cast<blDataType>(vector.y());
-    m_z = static_cast<blDataType>(vector.z());
+    m_x = static_cast<blNumberType>(vector.x());
+    m_y = static_cast<blNumberType>(vector.y());
+    m_z = static_cast<blNumberType>(vector.z());
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-template<typename blDataType2>
-inline blVector3d<blDataType>::blVector3d(const blPoint2d<blDataType2>& point)
+template<typename blNumberType>
+template<typename blNumberType2>
+inline blVector3d<blNumberType>::blVector3d(const blPoint2d<blNumberType2>& point)
 {
-    m_x = static_cast<blDataType>(point.x());
-    m_y = static_cast<blDataType>(point.y());
+    m_x = static_cast<blNumberType>(point.x());
+    m_y = static_cast<blNumberType>(point.y());
     m_z = 0;
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-template<typename blDataType2>
-inline blVector3d<blDataType>& blVector3d<blDataType>::operator=(const blVector3d<blDataType2>& vector)
+template<typename blNumberType>
+template<typename blNumberType2>
+inline blVector3d<blNumberType>& blVector3d<blNumberType>::operator=(const blVector3d<blNumberType2>& vector)
 {
     if(this != &vector)
     {
-        m_x = static_cast<blDataType>(vector.x());
-        m_y = static_cast<blDataType>(vector.y());
-        m_z = static_cast<blDataType>(vector.z());
+        m_x = static_cast<blNumberType>(vector.x());
+        m_y = static_cast<blNumberType>(vector.y());
+        m_z = static_cast<blNumberType>(vector.z());
     }
 
     return (*this);
@@ -175,13 +200,14 @@ inline blVector3d<blDataType>& blVector3d<blDataType>::operator=(const blVector3
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-template<typename blDataType2>
-inline blVector3d<blDataType>& blVector3d<blDataType>::operator=(const blPoint2d<blDataType2>& point)
+template<typename blNumberType>
+template<typename blNumberType2>
+inline blVector3d<blNumberType>& blVector3d<blNumberType>::operator=(const blPoint2d<blNumberType2>& point)
 {
-    m_x = static_cast<blDataType>(point.x());
-    m_y = static_cast<blDataType>(point.y());
+    m_x = static_cast<blNumberType>(point.x());
+    m_y = static_cast<blNumberType>(point.y());
     m_z = 0;
 
     return (*this);
@@ -189,63 +215,70 @@ inline blVector3d<blDataType>& blVector3d<blDataType>::operator=(const blPoint2d
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline const blDataType& blVector3d<blDataType>::x()const
+template<typename blNumberType>
+inline const blNumberType& blVector3d<blNumberType>::x()const
 {
     return m_x;
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline const blDataType& blVector3d<blDataType>::y()const
+template<typename blNumberType>
+inline const blNumberType& blVector3d<blNumberType>::y()const
 {
     return m_y;
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline const blDataType& blVector3d<blDataType>::z()const
+template<typename blNumberType>
+inline const blNumberType& blVector3d<blNumberType>::z()const
 {
     return m_z;
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType& blVector3d<blDataType>::x()
+template<typename blNumberType>
+inline blNumberType& blVector3d<blNumberType>::x()
 {
     return m_x;
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType& blVector3d<blDataType>::y()
+template<typename blNumberType>
+inline blNumberType& blVector3d<blNumberType>::y()
 {
     return m_y;
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType& blVector3d<blDataType>::z()
+template<typename blNumberType>
+inline blNumberType& blVector3d<blNumberType>::z()
 {
     return m_z;
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline bool blVector3d<blDataType>::operator==(const blVector3d<blDataType>& vector)const
+template<typename blNumberType>
+inline bool blVector3d<blNumberType>::operator==(const blVector3d<blNumberType>& vector)const
 {
     // Check the components
 
@@ -264,9 +297,10 @@ inline bool blVector3d<blDataType>::operator==(const blVector3d<blDataType>& vec
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline bool blVector3d<blDataType>::operator!=(const blVector3d<blDataType>& vector)const
+template<typename blNumberType>
+inline bool blVector3d<blNumberType>::operator!=(const blVector3d<blNumberType>& vector)const
 {
     // Check the components
 
@@ -285,18 +319,20 @@ inline bool blVector3d<blDataType>::operator!=(const blVector3d<blDataType>& vec
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline const blVector3d<blDataType> blVector3d<blDataType>::operator-()const
+template<typename blNumberType>
+inline const blVector3d<blNumberType> blVector3d<blNumberType>::operator-()const
 {
-    return blVector3d<blDataType>(-m_x,-m_y,-m_z);
+    return blVector3d<blNumberType>(-m_x,-m_y,-m_z);
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blVector3d<blDataType>& blVector3d<blDataType>::operator+=(const blVector3d<blDataType>& vector)
+template<typename blNumberType>
+inline blVector3d<blNumberType>& blVector3d<blNumberType>::operator+=(const blVector3d<blNumberType>& vector)
 {
     m_x += vector.x();
     m_y += vector.y();
@@ -307,9 +343,10 @@ inline blVector3d<blDataType>& blVector3d<blDataType>::operator+=(const blVector
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blVector3d<blDataType>& blVector3d<blDataType>::operator-=(const blVector3d<blDataType>& vector)
+template<typename blNumberType>
+inline blVector3d<blNumberType>& blVector3d<blNumberType>::operator-=(const blVector3d<blNumberType>& vector)
 {
     m_x -= vector.x();
     m_y -= vector.y();
@@ -320,9 +357,10 @@ inline blVector3d<blDataType>& blVector3d<blDataType>::operator-=(const blVector
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blVector3d<blDataType>& blVector3d<blDataType>::operator*=(const blDataType& scalar)
+template<typename blNumberType>
+inline blVector3d<blNumberType>& blVector3d<blNumberType>::operator*=(const blNumberType& scalar)
 {
     m_x *= scalar;
     m_y *= scalar;
@@ -333,9 +371,10 @@ inline blVector3d<blDataType>& blVector3d<blDataType>::operator*=(const blDataTy
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blVector3d<blDataType>& blVector3d<blDataType>::operator/=(const blDataType& scalar)
+template<typename blNumberType>
+inline blVector3d<blNumberType>& blVector3d<blNumberType>::operator/=(const blNumberType& scalar)
 {
     m_x /= scalar;
     m_y /= scalar;
@@ -346,59 +385,73 @@ inline blVector3d<blDataType>& blVector3d<blDataType>::operator/=(const blDataTy
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blVector3d<blDataType> operator*(const blDataType& scalar,
-                                        const blVector3d<blDataType>& vector)
+template<typename blNumberType>
+inline blVector3d<blNumberType> operator*(const blNumberType& scalar,
+                                        const blVector3d<blNumberType>& vector)
 {
     return vector * scalar;
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline const blVector3d<blDataType> blVector3d<blDataType>::operator*(const blDataType& scalar)const
+template<typename blNumberType>
+inline const blVector3d<blNumberType> blVector3d<blNumberType>::operator*(const blNumberType& scalar)const
 {
-    return blVector3d<blDataType>(m_x * scalar,m_y * scalar,m_z * scalar);
+    return blVector3d<blNumberType>(m_x * scalar,m_y * scalar,m_z * scalar);
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline const blVector3d<blDataType> blVector3d<blDataType>::operator/(const blDataType& scalar)const
+template<typename blNumberType>
+inline const blVector3d<blNumberType> blVector3d<blNumberType>::operator/(const blNumberType& scalar)const
 {
-    return blVector3d<blDataType>(m_x / scalar,m_y / scalar, m_z / scalar);
+    return blVector3d<blNumberType>(m_x / scalar,m_y / scalar, m_z / scalar);
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline const blVector3d<blDataType> blVector3d<blDataType>::operator+(const blVector3d<blDataType>& vector)const
+template<typename blNumberType>
+inline const blVector3d<blNumberType> blVector3d<blNumberType>::operator+(const blVector3d<blNumberType>& vector)const
 {
-    return blVector3d<blDataType>(m_x + vector.x(),m_y + vector.y(), m_z + vector.z());
+    return blVector3d<blNumberType>(m_x + vector.x(),m_y + vector.y(), m_z + vector.z());
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline const blVector3d<blDataType> blVector3d<blDataType>::operator-(const blVector3d<blDataType>& vector)const
+template<typename blNumberType>
+inline const blVector3d<blNumberType> blVector3d<blNumberType>::operator-(const blVector3d<blNumberType>& vector)const
 {
-    return blVector3d<blDataType>(m_x - vector.x(),m_y - vector.y(),m_z - vector.z());
+    return blVector3d<blNumberType>(m_x - vector.x(),m_y - vector.y(),m_z - vector.z());
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType blVector3d<blDataType>::operator*(const blVector3d<blDataType>& vector)const
+template<typename blNumberType>
+inline blNumberType blVector3d<blNumberType>::operator*(const blVector3d<blNumberType>& vector)const
 {
     return (m_x * vector.x() + m_y * vector.y() + m_z * vector.z());
 }
 //-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// End of the blMathAPI namespace
+}
+//-------------------------------------------------------------------
+
 
 
 #endif // BL_VECTOR3D_HPP

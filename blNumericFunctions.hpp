@@ -2,28 +2,45 @@
 #define BL_NUMERICFUNCTIONS_HPP
 
 
+///-------------------------------------------------------------------
+///
+///
+///
+/// PURPOSE:        A collection of simple numeric functions that
+///                 come up all the time and might be useful
+///
+/// AUTHOR:         Vincenzo Barbato
+///                 navyenzo@gmail.com
+///
+/// NOTE:           All things in this library are defined within the
+///                 blMathAPI namespace
+///
+/// LISENSE:        MIT-LICENCE
+///                 http://www.opensource.org/licenses/mit-license.php
+///
+///
+///
+///-------------------------------------------------------------------
+
+
+
 //-------------------------------------------------------------------
-// FILE:            blNumericFunctions.hpp
-// CLASS:           None
-// BASE CLASS:      None
-//
-// PURPOSE:         A collection of simple numeric functions that
-//                  I have used and re-used throughout my work
-//
-// AUTHOR:          Vincenzo Barbato
-//                  http://www.barbatolabs.com
-//                  navyenzo@gmail.com
-//
-// LISENSE:         MIT-LICENCE
-//                  http://www.opensource.org/licenses/mit-license.php
-//
-// DEPENDENCIES:
-//
-// NOTES:
-//
-// DATE CREATED:    Oct/19/2010
-// DATE UPDATED:
+// Includes needed for this file
 //-------------------------------------------------------------------
+#include <limits>
+#include <complex>
+#include <cstdint>
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// NOTE: This class is defined within the blMathAPI namespace
+//-------------------------------------------------------------------
+namespace blMathAPI
+{
+//-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
@@ -31,43 +48,66 @@
 // a number is infinite or if it's not
 // a number
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline bool isNaN(const blDataType& number)
+template<typename blNumberType>
+inline bool isNaN(const blNumberType& number)
 {
     return (number != number);
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline bool isInf(const blDataType& number)
+template<typename blNumberType>
+inline bool isInf(const blNumberType& number)
 {
-    return (number <= std::numeric_limits<blDataType>::min() &&
-            number >= std::numeric_limits<blDataType>::max());
+    return (number <= std::numeric_limits<blNumberType>::min() &&
+            number >= std::numeric_limits<blNumberType>::max());
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
 // The following functions return
 // the sign of a number
 //-------------------------------------------------------------------
-template <typename blDataType>
-inline blDataType sign(const blDataType& number)
+template <typename blNumberType>
+inline blNumberType sign(const blNumberType& number)
 {
-    return blDataType( (blDataType(0) < number) - (number < blDataType(0)) );
+    return static_cast<blNumberType>( (static_cast<blNumberType>(0) < number) - (number < static_cast<blNumberType>(0)) );
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline std::complex<blDataType> sign(const std::complex<blDataType>& number)
+template<typename blNumberType>
+inline std::complex<blNumberType> sign(const std::complex<blNumberType>& number)
 {
-    return std::complex<blDataType>(blDataType( (blDataType(0) < number.real()) - (number.real() < blDataType(0)) ),0);
+    return std::complex<blNumberType>(blNumberType( (blNumberType(0) < number.real()) - (number.real() < blNumberType(0)) ),0);
 }
 //-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// Returns the absolute value of a function
+// This function requires the argument type to
+// define the < comparator and the - operator as
+// it compares against zero and then negates the
+// number if it is less than zero
+//-------------------------------------------------------------------
+template<typename blNumberType>
+inline blNumberType abs(const blNumberType& number)
+{
+    if(number < static_cast<blNumberType>(0))
+        return -number;
+    else
+        return number;
+}
+//-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
@@ -77,37 +117,39 @@ inline std::complex<blDataType> sign(const std::complex<blDataType>& number)
 // The only requirement is that the multiplication operator
 // be defined for the first entity
 //-------------------------------------------------------------------
-template <typename blDataType>
-inline blDataType power(const blDataType& base,const int& exponent)
+template <typename blNumberType>
+inline blNumberType power(const blNumberType& base,const int& exponent)
 {
-    blDataType result = base;
+    blNumberType result = base;
 
     for(int i = 1; i < exponent; ++i)
-        result = result*base;
+        result *= base;
 
     return result;
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // The following functions round off
 // a number to the specified precision
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType roundOff(const blDataType& number,
+template<typename blNumberType>
+inline blNumberType roundOff(const blNumberType& number,
                            const int& precision)
 {
-    blDataType multiplier = std::pow(blDataType(10),blDataType(precision));
+    blNumberType multiplier = blMathAPI::power(blNumberType(10),blNumberType(precision));
 
-    return ( blDataType( int(multiplier * number + blDataType(0.5)) ) / blDataType(multiplier) );
+    return ( blNumberType( int(multiplier * number + blNumberType(0.5)) ) / blNumberType(multiplier) );
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline std::complex<blDataType> roundOff(const std::complex<blDataType>& number,
+template<typename blNumberType>
+inline std::complex<blNumberType> roundOff(const std::complex<blNumberType>& number,
                                          const int& precision)
 {
     // For a std::complex
@@ -116,10 +158,11 @@ inline std::complex<blDataType> roundOff(const std::complex<blDataType>& number,
     // real and imaginary
     // parts
 
-    return std::complex<blDataType>(roundOff<blDataType>(std::real(number),precision),
-                                    roundOff<blDataType>(std::imag(number),precision));
+    return std::complex<blNumberType>(roundOff<blNumberType>(std::real(number),precision),
+                                    roundOff<blNumberType>(std::imag(number),precision));
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
@@ -135,11 +178,12 @@ inline void modf(const blNumberType& number,
                  blIntegralPartType& integralPart,
                  blFractionalPartType& fractionalPart)
 {
-    integralPart = (long long int)(number);
+    integralPart = static_cast<blIntegralPartType>(static_cast<int64_t>(number));
 
-    fractionalPart = blFractionalPartType(number - blNumberType(integralPart));
+    fractionalPart = static_cast<blFractionalPartType>(number - static_cast<blNumberType>(integralPart));
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
@@ -175,6 +219,7 @@ inline blIntegerType gcd(const blIntegerType& a,
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // The following function calculates
 // the least common multiple
@@ -183,25 +228,27 @@ template<typename blIntegerType>
 inline blIntegerType lcm(const blIntegerType& a,
                          const blIntegerType& b)
 {
-    return std::abs(a * b) / gcd(a,b);
+    return blMathAPI::abs(a * b) / gcd(a,b);
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
 // The following function calculates if
 // a number is zero
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline bool isZero(const blDataType& number,
-                   const blDataType howManyEpsilons)
+template<typename blNumberType>
+inline bool isZero(const blNumberType& number,
+                   const blNumberType howManyEpsilons)
 {
-    if(std::abs(number) <= howManyEpsilons * std::numeric_limits<blDataType>::epsilon())
+    if(blMathAPI::abs(number) <= howManyEpsilons * std::numeric_limits<blNumberType>::epsilon())
         return true;
     else
         return false;
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
@@ -221,17 +268,18 @@ inline blIntegerType factorial(const blIntegerType& number)
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // The following function maps a
 // value from the input domain to
 // the output range
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType linearMap(const blDataType& valueToMap,
-                            const blDataType& lowInput,
-                            const blDataType& highInput,
-                            const blDataType& lowOutput,
-                            const blDataType& highOutput)
+template<typename blNumberType>
+inline blNumberType linearMap(const blNumberType& valueToMap,
+                            const blNumberType& lowInput,
+                            const blNumberType& highInput,
+                            const blNumberType& lowOutput,
+                            const blNumberType& highOutput)
 {
     auto slope = (highOutput - lowOutput) / (highInput - lowInput);
     auto intercept = highOutput - slope * highInput;
@@ -239,6 +287,14 @@ inline blDataType linearMap(const blDataType& valueToMap,
     return ( slope * valueToMap + intercept );
 }
 //-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// End of the blMathAPI namespace
+}
+//-------------------------------------------------------------------
+
 
 
 #endif // BL_NUMERICFUNCTIONS_HPP

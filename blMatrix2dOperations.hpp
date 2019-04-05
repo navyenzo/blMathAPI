@@ -2,44 +2,51 @@
 #define BL_MATRIX2DOPERATIONS_HPP
 
 
-//-------------------------------------------------------------------
-// FILE:            blMatrix2dOperations.hpp
-// CLASS:           None
-// BASE CLASS:      None
-//
-// PURPOSE:         Useful functions for handling 2x2 matrices
-//
-// AUTHOR:          Vincenzo Barbato
-//                  http://www.barbatolabs.com
-//                  navyenzo@gmail.com
-//
-// LISENSE:         MIT-LICENCE
-//                  http://www.opensource.org/licenses/mit-license.php
-//
-// DEPENDENCIES:
-//
-// NOTES:
-//-------------------------------------------------------------------
 
+///-------------------------------------------------------------------
+///
+///
+///
+/// PURPOSE:        Useful functions for handling 2x2 matrices
+///
+/// AUTHOR:         Vincenzo Barbato
+///                 navyenzo@gmail.com
+///
+/// NOTE:           All things in this library are defined within the
+///                 blMathAPI namespace
+///
+/// LISENSE:        MIT-LICENCE
+///                 http://www.opensource.org/licenses/mit-license.php
+///
+///
+///
+///-------------------------------------------------------------------
 
-//-------------------------------------------------------------------
-// Includes and libs needed for this file
-//-------------------------------------------------------------------
-//-------------------------------------------------------------------
 
 
 //-------------------------------------------------------------------
-// Enums used for this file and sub-files
+// Includes needed for this file
 //-------------------------------------------------------------------
+#include "blMatrix2d.hpp"
 //-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// NOTE: This class is defined within the blMathAPI namespace
+//-------------------------------------------------------------------
+namespace blMathAPI
+{
+//-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
 // Function used to calculate the
 // trace of the matrix
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType trace(const blMatrix2d<blDataType>& matrix)
+template<typename blNumberType>
+inline blNumberType trace(const blMatrix2d<blNumberType>& matrix)
 {
     // trace is the sum
     // of the diagonal
@@ -50,77 +57,84 @@ inline blDataType trace(const blMatrix2d<blDataType>& matrix)
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Function used to calculate the determinant
 // of a matrix
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blDataType det(const blMatrix2d<blDataType>& matrix)
+template<typename blNumberType>
+inline blNumberType det(const blMatrix2d<blNumberType>& matrix)
 {
     return (matrix[0][0]*matrix[1][1] - matrix[1][0]*matrix[0][1]);
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Function used to transpose a matrix
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blMatrix2d<blDataType> transpose(const blMatrix2d<blDataType>& matrix)
+template<typename blNumberType>
+inline blMatrix2d<blNumberType> transpose(const blMatrix2d<blNumberType>& matrix)
 {
-    return blMatrix2d<blDataType>(matrix[0][0],matrix[1][0],
-                                  matrix[0][1],matrix[1][1]);
+    return blMatrix2d<blNumberType>(matrix[0][0],matrix[1][0],
+                                    matrix[0][1],matrix[1][1]);
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
 // Function used to return an identity matrix
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blMatrix2d<blDataType> eye2d(const blDataType& diagonalValue = blDataType(1))
+template<typename blNumberType>
+inline blMatrix2d<blNumberType> eye2d(const blNumberType& diagonalValue = blNumberType(1))
 {
-    return blMatrix2d<blDataType>(diagonalValue,0,
-                                  0,diagonalValue);
+    return blMatrix2d<blNumberType>(diagonalValue,0,
+                                    0,diagonalValue);
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
 // Function used to calculate the inverse of a matrix
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blMatrix2d<blDataType> inv(const blMatrix2d<blDataType>& matrix)
+template<typename blNumberType>
+inline blMatrix2d<blNumberType> inv(const blMatrix2d<blNumberType>& matrix)
 {
-    return blMatrix2d<blDataType>(matrix[1][1],-matrix[0][1],-matrix[1][0],matrix[0][0]) / det(matrix);
+    return blMatrix2d<blNumberType>(matrix[1][1],-matrix[0][1],-matrix[1][0],matrix[0][0]) / det(matrix);
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
 // Function used to divide two matrices which
 // means multiplying m1 by inv(m2)
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blMatrix2d<blDataType> operator/(const blMatrix2d<blDataType>& m1,
-                                        const blMatrix2d<blDataType>& m2)
+template<typename blNumberType>
+inline blMatrix2d<blNumberType> operator/(const blMatrix2d<blNumberType>& m1,
+                                          const blMatrix2d<blNumberType>& m2)
 {
     return m1*inv(m2);
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Function used to multiply a scalar by a matrix where
 // the scalar comes before the matrix in the equation
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blMatrix2d<blDataType> operator*(const blDataType& scalar,
-                                        const blMatrix2d<blDataType>& matrix)
+template<typename blNumberType>
+inline blMatrix2d<blNumberType> operator*(const blNumberType& scalar,
+                                          const blMatrix2d<blNumberType>& matrix)
 {
     return matrix*scalar;
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
@@ -128,39 +142,42 @@ inline blMatrix2d<blDataType> operator*(const blDataType& scalar,
 // which means multiply a scalar by the inverse
 // of that matrix
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blMatrix2d<blDataType> operator/(const blDataType& scalar,
-                                        const blMatrix2d<blDataType>& matrix)
+template<typename blNumberType>
+inline blMatrix2d<blNumberType> operator/(const blNumberType& scalar,
+                                          const blMatrix2d<blNumberType>& matrix)
 {
     inv(matrix)*scalar;
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Functions used to multiply points with matrices
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blPoint2d<blDataType> operator*(const blPoint2d<blDataType>& point1,
-                                       const blMatrix2d<blDataType>& matrix2)
+template<typename blNumberType>
+inline blPoint2d<blNumberType> operator*(const blPoint2d<blNumberType>& point1,
+                                         const blMatrix2d<blNumberType>& matrix2)
 {
     // C[i][j] = Sum(A[i][k]*B[k][j])
 
-    return blPoint2d<blDataType>(point1.x()*matrix2[0][0] + point1.y()*matrix2[1][0],
+    return blPoint2d<blNumberType>(point1.x()*matrix2[0][0] + point1.y()*matrix2[1][0],
                                  point1.x()*matrix2[0][1] + point1.y()*matrix2[1][1]);
 }
 
 
-template<typename blDataType>
-inline blPoint2d<blDataType> operator*(const blMatrix2d<blDataType>& matrix1,
-                                       const blPoint2d<blDataType>& point2)
+
+template<typename blNumberType>
+inline blPoint2d<blNumberType> operator*(const blMatrix2d<blNumberType>& matrix1,
+                                         const blPoint2d<blNumberType>& point2)
 {
     // C[i][j] = Sum(A[i][k]*B[k][j])
 
-    return blPoint2d<blDataType>(matrix1[0][0]*point2.x() + matrix1[0][1]*point2.y(),
+    return blPoint2d<blNumberType>(matrix1[0][0]*point2.x() + matrix1[0][1]*point2.y(),
                                  matrix1[1][0]*point2.x() + matrix1[1][1]*point2.y());
 }
 //-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
@@ -168,9 +185,9 @@ inline blPoint2d<blDataType> operator*(const blMatrix2d<blDataType>& matrix1,
 // output a matrix2d
 // to an output stream
 //-------------------------------------------------------------------
-template<typename blDataType>
+template<typename blNumberType>
 inline std::ostream& operator<<(std::ostream& os,
-                                const blMatrix2d<blDataType>& matrix2d)
+                                const blMatrix2d<blNumberType>& matrix2d)
 {
     // We simply output the
     // components with a
@@ -184,14 +201,15 @@ inline std::ostream& operator<<(std::ostream& os,
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Function used to
 // input a matrix2d
 // from an input stream
 //-------------------------------------------------------------------
-template<typename blDataType>
+template<typename blNumberType>
 inline std::istream& operator>>(std::istream& is,
-                                blMatrix2d<blDataType>& matrix2d)
+                                blMatrix2d<blNumberType>& matrix2d)
 {
     if(!(is >> matrix2d[0][0]))
     {
@@ -230,6 +248,7 @@ inline std::istream& operator>>(std::istream& is,
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // Function used to
 // convert a generic
@@ -237,13 +256,13 @@ inline std::istream& operator>>(std::istream& is,
 //-------------------------------------------------------------------
 template<typename blStringIteratorType,
          typename blCharacterType,
-         typename blDataType>
+         typename blNumberType>
 
 inline blStringIteratorType convertStringToNumber(const blStringIteratorType& beginIter,
-                                                    const blStringIteratorType& endIter,
-                                                    const blCharacterType& decimalPointDelimiter,
-                                                    blMathAPI::blMatrix2d<blDataType>& convertedNumber,
-                                                    const int& numberOfTimesToRepeatTheSearchIfBeginIterEqualsEndIter)
+                                                  const blStringIteratorType& endIter,
+                                                  const blCharacterType& decimalPointDelimiter,
+                                                  blMathAPI::blMatrix2d<blNumberType>& convertedNumber,
+                                                  const int& numberOfTimesToRepeatTheSearchIfBeginIterEqualsEndIter)
 {
     // We expect the
     // following format:
@@ -300,6 +319,14 @@ inline blStringIteratorType convertStringToNumber(const blStringIteratorType& be
     return newStringPosition;
 }
 //-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// End of the blMathAPI namespace
+}
+//-------------------------------------------------------------------
+
 
 
 #endif // BL_MATRIX2DOPERATIONS_HPP

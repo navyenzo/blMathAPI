@@ -2,19 +2,42 @@
 #define BL_ROOTFINDING_HPP
 
 
+///-------------------------------------------------------------------
+///
+///
+///
+/// PURPOSE:        A collection of root finding
+///                 methods to solve equations of
+///                 the type:  f(x) = 0
+///
+/// AUTHOR:         Vincenzo Barbato
+///                 navyenzo@gmail.com
+///
+/// NOTE:           All things in this library are defined within the
+///                 blMathAPI namespace
+///
+/// LISENSE:        MIT-LICENCE
+///                 http://www.opensource.org/licenses/mit-license.php
+///
+///
+///
+///-------------------------------------------------------------------
+
+
 
 //-------------------------------------------------------------------
-// FILE:            blRootFinding.hpp
-// CLASS:           None
-// BASE CLASS:      None
-//
-// PURPOSE:         A collection of root finding
-//                  methods to solve equations of
-//                  the type:  f(x) = 0
-//
-// AUTHOR:          Vincenzo Barbato
-//                  http://www.barbatolabs.com
-//                  navyenzo@gmail.com
+// Includes needed for this file
+//-------------------------------------------------------------------
+#include "blNumericFunctions.hpp"
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// NOTE: This class is defined within the blMathAPI namespace
+//-------------------------------------------------------------------
+namespace blMathAPI
+{
 //-------------------------------------------------------------------
 
 
@@ -246,7 +269,7 @@ inline blDataType bracketedMethod(blDataType a,
 
         // Calculate the convergence error
 
-        errorValue = std::abs(a - b);
+        errorValue = blMathAPI::abs(a - b);
 
 
 
@@ -317,7 +340,7 @@ inline blDataType brentsMethod(blDataType a,
     // a and b such that a is smaller than
     // b to facilitate Brent's method algorithm
 
-    if(std::abs(Fa) < std::abs(Fb))
+    if(blMathAPI::abs(Fa) < blMathAPI::abs(Fb))
     {
         std::swap(a,b);
         std::swap(Fa,Fb);
@@ -363,11 +386,11 @@ inline blDataType brentsMethod(blDataType a,
     auto Fc = Fa;
     auto Fs = Fa;
 
-    blDataType absBminusA = std::abs(b - a);
-    blDataType absBminusC = std::abs(b - c);
-    blDataType absCminusD = std::abs(c - d);
-    blDataType absD = std::abs(d);
-    blDataType absSminusB = std::abs(s - b);
+    blDataType absBminusA = blMathAPI::abs(b - a);
+    blDataType absBminusC = blMathAPI::abs(b - c);
+    blDataType absCminusD = blMathAPI::abs(c - d);
+    blDataType absD = blMathAPI::abs(d);
+    blDataType absSminusB = blMathAPI::abs(s - b);
 
     auto two = blDataType(2);
     auto three = blDataType(3);
@@ -385,7 +408,7 @@ inline blDataType brentsMethod(blDataType a,
 
 
 
-    while(std::abs(Fs) > zero &&
+    while(blMathAPI::abs(Fs) > zero &&
           absBminusA > convergenceTolerance &&
           iterations < maxIterations)
     {
@@ -430,11 +453,11 @@ inline blDataType brentsMethod(blDataType a,
         // needed to evaluate all the necessary
         // conditions
 
-        absSminusB = std::abs(s - b);
-        absBminusC = std::abs(b - c);
-        absCminusD = std::abs(c - d);
-        absBminusA = std::abs(b - a);
-        absD = std::abs(d);
+        absSminusB = blMathAPI::abs(s - b);
+        absBminusC = blMathAPI::abs(b - c);
+        absCminusD = blMathAPI::abs(c - d);
+        absBminusA = blMathAPI::abs(b - a);
+        absD = blMathAPI::abs(d);
 
 
 
@@ -480,7 +503,7 @@ inline blDataType brentsMethod(blDataType a,
 
 
 
-        if(std::abs(Fa) < std::abs(Fb))
+        if(blMathAPI::abs(Fa) < blMathAPI::abs(Fb))
         {
             std::swap(a,b);
             std::swap(Fa,Fb);
@@ -586,6 +609,13 @@ inline blDataType newtonRaphsonMethod(blDataType xi,
     // We return the found root
 
     return xi_new;
+}
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// End of the blMathAPI namespace
 }
 //-------------------------------------------------------------------
 
