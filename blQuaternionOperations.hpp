@@ -129,41 +129,71 @@ inline blQuaternion<blNumberType> getConjugate(const blQuaternion<blNumberType>&
 
 
 //-------------------------------------------------------------------
-// Function used to go from euler angles
+// Functions used to go from euler angles
 // to a quaternion
 //-------------------------------------------------------------------
 template<typename blNumberType>
-inline void eulerAnglesToQuaternion(const blVector3d<blNumberType>& angles,
-                                    blQuaternion<blNumberType>& qtn)
+inline blQuaternion<blNumberType>& eulerAnglesToQuaternion(const blNumberType& roll,
+                                                           const blNumberType& pitch,
+                                                           const blNumberType& yaw,
+                                                           blQuaternion<blNumberType>& qtn)
 {
-    blQuaternion<blNumberType> xQtn(std::cos(angles.x()/blNumberType(2)),
-                                    blVector3d<blNumberType>(std::sin(angles.x()/blNumberType(2)),
-                                                             0,
-                                                             0));
+    blNumberType c1 = std::cos(roll/static_cast<blNumberType>(2.0));
+    blNumberType c2 = std::cos(pitch/static_cast<blNumberType>(2.0));
+    blNumberType c3 = std::cos(yaw/static_cast<blNumberType>(2.0));
 
-    blQuaternion<blNumberType> yQtn(std::cos(angles.y()/blNumberType(2)),
-                                    blVector3d<blNumberType>(0,
-                                                             std::sin(angles.y()/blNumberType(2)),
-                                                             0));
+    blNumberType s1 = std::sin(roll/static_cast<blNumberType>(2.0));
+    blNumberType s2 = std::sin(pitch/static_cast<blNumberType>(2.0));
+    blNumberType s3 = std::sin(yaw/static_cast<blNumberType>(2.0));
 
-    blQuaternion<blNumberType> zQtn(std::cos(angles.z()/blNumberType(2)),
-                                    blVector3d<blNumberType>(0,
-                                                             0,
-                                                             std::sin(angles.z()/blNumberType(2))));
+    qtn.w() = c1*c2*c3 + s1*s2*s3;
+    qtn.xyz().x() = s1*c2*c3 - c1*s2*s3;
+    qtn.xyz().y() = c1*s2*c3 + s1*c2*s3;
+    qtn.xyz().z() = c1*c2*s3 - s1*s2*c3;
 
-    qtn = xQtn*yQtn*zQtn;
+    normalize(qtn);
+
+    return qtn;
 }
 
 
 
 template<typename blNumberType>
-inline blQuaternion<blNumberType> eulerAnglesToQuaternion(const blVector3d<blNumberType>& angles)
+inline blQuaternion<blNumberType>& eulerAnglesToQuaternion(const blVector3d<blNumberType>& eulerAngles,
+                                                           blQuaternion<blNumberType>& qtn)
+{
+    return eulerAnglesToQuaternion(eulerAngles.x(),
+                                   eulerAngles.y(),
+                                   eulerAngles.z(),
+                                   qtn);
+}
+
+
+
+template<typename blNumberType>
+inline blQuaternion<blNumberType> eulerAnglesToQuaternion(const blNumberType& roll,
+                                                          const blNumberType& pitch,
+                                                          const blNumberType& yaw)
 {
     blQuaternion<blNumberType> qtn;
 
-    eulerAnglesToQuaternion(angles,qtn);
+    return eulerAnglesToQuaternion(roll,
+                                   pitch,
+                                   yaw,
+                                   qtn);
+}
 
-    return qtn;
+
+
+template<typename blNumberType>
+inline blQuaternion<blNumberType> eulerAnglesToQuaternion(const blVector3d<blNumberType>& eulerAngles)
+{
+    blQuaternion<blNumberType> qtn;
+
+    return eulerAnglesToQuaternion(eulerAngles.x(),
+                                   eulerAngles.y(),
+                                   eulerAngles.z(),
+                                   qtn);
 }
 //-------------------------------------------------------------------
 
@@ -175,16 +205,28 @@ inline blQuaternion<blNumberType> eulerAnglesToQuaternion(const blVector3d<blNum
 //-------------------------------------------------------------------
 template<typename blNumberType>
 inline void quaternionToEulerAngles(const blQuaternion<blNumberType>& qtn,
+                                    blNumberType& roll,
+                                    blNumberType& pitch,
+                                    blNumberType& yaw)
+{
+    roll = std::atan2(2.0*(qtn.w()*qtn.xyz().x() + qtn.xyz().y()*qtn.xyz().z()),
+                      1.0 - 2.0*(qtn.xyz().x()*qtn.xyz().x() + qtn.xyz().y()*qtn.xyz().y()));
+
+    pitch = std::asin(2.0*(qtn.w()*qtn.xyz().y() - qtn.xyz().z()*qtn.xyz().x()));
+
+    yaw = std::atan2(2.0*(qtn.w()*qtn.xyz().z() + qtn.xyz().x()*qtn.xyz().y()),
+                     1.0 - 2.0*(qtn.xyz().y()*qtn.xyz().y() + qtn.xyz().z()*qtn.xyz().z()));
+}
+
+
+
+template<typename blNumberType>
+inline void quaternionToEulerAngles(const blQuaternion<blNumberType>& qtn,
                                     blVector3d<blNumberType>& angles)
 {
-    angles.x() = std::atan2(2.0*(qtn.w()*qtn.xyz().x() + qtn.xyz().y()*qtn.xyz().z()),
-                            1.0 - 2.0*(qtn.xyz().x()*qtn.xyz().x() + qtn.xyz().y()*qtn.xyz().y()));
-
-    angles.y() = std::asin(2.0*(qtn.w()*qtn.xyz().y() - qtn.xyz().z()*qtn.xyz().x()));
-
-    angles.z() = std::atan2(2.0*(qtn.w()*qtn.xyz().z() + qtn.xyz().x()*qtn.xyz().y()),
-                            1.0 - 2.0*(qtn.xyz().y()*qtn.xyz().y() + qtn.xyz().z()*qtn.xyz().z()));
+    quaternionToEulerAngles(qtn,angles.x(),angles.y(),angles.z());
 }
+
 
 
 template<typename blNumberType>
@@ -205,9 +247,9 @@ inline blVector3d<blNumberType> quaternionToEulerAngles(const blQuaternion<blNum
 // to a quaternion
 //-------------------------------------------------------------------
 template<typename blNumberType>
-inline void axisAngleToQuaternion(const blVector3d<blNumberType>& axis,
-                                  const blNumberType& angle,
-                                  blQuaternion<blNumberType>& qtn)
+inline blQuaternion<blNumberType>& axisAngleToQuaternion(const blVector3d<blNumberType>& axis,
+                                                         const blNumberType& angle,
+                                                         blQuaternion<blNumberType>& qtn)
 {
     auto normalizedAxis = getNormalized(axis);
 
@@ -216,18 +258,21 @@ inline void axisAngleToQuaternion(const blVector3d<blNumberType>& axis,
     blNumberType scalar = std::sin(angle/blNumberType(2));
 
     qtn.xyz() = axis * scalar;
+
+    normalize(qtn);
+
+    return qtn;
 }
+
 
 
 template<typename blNumberType>
 inline blQuaternion<blNumberType> axisAngleToQuaternion(const blVector3d<blNumberType>& axis,
-                                                      const blNumberType& angle)
+                                                        const blNumberType& angle)
 {
     blQuaternion<blNumberType> qtn;
 
-    axisAngleToQuaternion(axis,angle,qtn);
-
-    return qtn;
+    return axisAngleToQuaternion(axis,angle,qtn);
 }
 //-------------------------------------------------------------------
 
@@ -242,37 +287,166 @@ inline void quaternionToAxisAngle(const blQuaternion<blNumberType>& qtn,
                                   blVector3d<blNumberType>& axis,
                                   blNumberType& angle)
 {
-    if(qtn.w() == blNumberType(1))
+    if(qtn.w() == static_cast<blNumberType>(1))
     {
         // In this case we have
         // no rotation
 
-        angle = blNumberType(0);
+        angle = static_cast<blNumberType>(0);
 
         axis = qtn.xyz();
     }
     else
     {
-        // Calculate the magnitude
+        auto normalizedQtn = getNormalized(qtn);
 
-        auto mag = norm1(qtn.xyz());
+        angle = static_cast<blNumberType>(2) * std::acos(normalizedQtn.w());
 
-        if(mag == blNumberType(0))
+        blNumberType s = std::sqrt(static_cast<blNumberType>(1) - normalizedQtn.w()*normalizedQtn.w());
+
+        axis = normalizedQtn.xyz();
+
+        if(s > 0.0001)
         {
-            // Magnitude is zero so
-            // we set default values
+            // To avoid division by zero, if s is close
+            // to zero then the direction of the axis is
+            // not important
 
-            angle = 0;
-
-            axis = blVector3d<blNumberType>(1,0,0);
-        }
-        else
-        {
-            angle = blNumberType(2) * std::acos(qtn.w());
-
-            axis = qtn.xyz() / mag;
+            axis /= s;
         }
     }
+}
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// Functions used to go from a quaternion to a rotation matrix
+//-------------------------------------------------------------------
+template<typename blNumberType>
+inline blMatrix3d<blNumberType>& quaternionToRotationMatrix(const blQuaternion<blNumberType>& qtn,
+                                                            blMatrix3d<blNumberType>& matrix)
+{
+    blNumberType sqw = qtn.w()*qtn.w();
+    blNumberType sqx = qtn.xyz().x()*qtn.xyz().x();
+    blNumberType sqy = qtn.xyz().y()*qtn.xyz().y();
+    blNumberType sqz = qtn.xyz().z()*qtn.xyz().z();
+
+    blNumberType invs = static_cast<blNumberType>(1) / (sqw + sqx + sqy + sqz);
+
+    matrix(0,0) = ( sqx - sqy - sqz + sqw) * invs;
+    matrix(1,1) = (-sqx + sqy - sqz + sqw) * invs;
+    matrix(2,2) = (-sqx - sqy + sqz + sqw) * invs;
+
+
+
+    blNumberType tmp1 = qtn.xyz().x() * qtn.xyz().y();
+    blNumberType tmp2 = qtn.xyz().z() * qtn.w();
+
+    matrix(1,0) = static_cast<blNumberType>(2) * (tmp1 + tmp2) * invs;
+    matrix(0,1) = static_cast<blNumberType>(2) * (tmp1 - tmp2) * invs;
+
+
+
+    tmp1 = qtn.xyz().x() * qtn.xyz().z();
+    tmp2 = qtn.xyz().y() * qtn.w();
+
+    matrix(2,0) = static_cast<blNumberType>(2) * (tmp1 - tmp2) * invs;
+    matrix(0,2) = static_cast<blNumberType>(2) * (tmp1 + tmp2) * invs;
+
+
+
+    tmp1 = qtn.xyz().y() * qtn.xyz().z();
+    tmp2 = qtn.xyz().z() * qtn.w();
+
+    matrix(2,1) = static_cast<blNumberType>(2) * (tmp1 + tmp2) * invs;
+    matrix(1,2) = static_cast<blNumberType>(2) * (tmp1 - tmp2) * invs;
+
+
+
+    return matrix;
+}
+
+
+
+template<typename blNumberType>
+inline blMatrix3d<blNumberType>& quaternionToRotationMatrix(const blQuaternion<blNumberType>& qtn)
+{
+    blMatrix3d<blNumberType> matrix;
+
+    return quaternionToRotationMatrix(qtn,matrix);
+}
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// Functions used to go from a rotation matrix to a quaternion
+//-------------------------------------------------------------------
+template<typename blNumberType>
+inline blQuaternion<blNumberType>& rotationMatrixToQuaternion(const blMatrix3d<blNumberType>& matrix,
+                                                              blQuaternion<blNumberType>& qtn)
+{
+    blNumberType k = 0;
+
+    auto matrixTrace = trace(matrix);
+
+
+
+    if(matrixTrace > static_cast<blNumberType>(0))
+    {
+        k = static_cast<blNumberType>(0.5) / std::sqrt(static_cast<blNumberType>(1) + matrixTrace);
+
+        qtn.w() = static_cast<blNumberType>(0.25) / k;
+        qtn.xyz().x() = k * (matrix(1,2) - matrix(2,1));
+        qtn.xyz().y() = k * (matrix(2,0) - matrix(0,2));
+        qtn.xyz().z() = k * (matrix(0,1) - matrix(1,0));
+    }
+    else if((matrix(0,0) > matrix(1,1)) && (matrix(0,0) > matrix(2,2)))
+    {
+        k = static_cast<blNumberType>(0.5) / std::sqrt(static_cast<blNumberType>(1) + matrix(0,0) - matrix(1,1) - matrix(2,2));
+
+        qtn.w() = k * (matrix(1,2) - matrix(2,1));
+        qtn.xyz().x() = static_cast<blNumberType>(0.25) / k;
+        qtn.xyz().y() = k * (matrix(1,0) + matrix(0,1));
+        qtn.xyz().z() = k * (matrix(2,0) + matrix(0,2));
+    }
+    else if(matrix(1,1) > matrix(2,2))
+    {
+        k = static_cast<blNumberType>(0.5) / std::sqrt(static_cast<blNumberType>(1) + matrix(1,1) - matrix(0,0) - matrix(2,2));
+
+        qtn.w() = k * (matrix(2,0) - matrix(0,2));
+        qtn.xyz().x() = k * (matrix(1,0) + matrix(0,1));
+        qtn.xyz().y() = static_cast<blNumberType>(0.25) / k;
+        qtn.xyz().z() = k * (matrix(2,0) - matrix(0,2));
+    }
+    else
+    {
+        k = static_cast<blNumberType>(0.5) / std::sqrt(static_cast<blNumberType>(1) + matrix(2,2) - matrix(0,0) - matrix(1,1));
+
+        qtn.w() = k * (matrix(0,1) - matrix(1,0));
+        qtn.xyz().x() = k * (matrix(2,0) + matrix(0,2));
+        qtn.xyz().y() = k * (matrix(2,1) + matrix(1,2));
+        qtn.xyz().z() = static_cast<blNumberType>(0.25) / k;
+    }
+
+
+
+    normalize(qtn);
+
+
+
+    return qtn;
+}
+
+
+
+template<typename blNumberType>
+inline blQuaternion<blNumberType> rotationMatrixToQuaternion(const blMatrix3d<blNumberType>& matrix)
+{
+    blQuaternion<blNumberType> qtn;
+
+    return rotationMatrixToQuaternion(matrix,qtn);
 }
 //-------------------------------------------------------------------
 

@@ -2,41 +2,46 @@
 #define BL_RUNGAKUTTA_HPP
 
 
-//-------------------------------------------------------------------
-// FILE:            blRungaKutta.hpp
-// CLASS:           blRungaKutta
-// BASE CLASS:      None
-//
-// PURPOSE:         A collection of runga-kutta
-//                  methods to solve systems of
-//                  differential equations
-//
-// AUTHOR:          Vincenzo Barbato
-//                  http://www.barbatolabs.com
-//                  navyenzo@gmail.com
-//
-// LISENSE:         MIT-LICENCE
-//                  http://www.opensource.org/licenses/mit-license.php
-//
-// DEPENDENCIES:
-//
-// NOTES:
-//
-// DATE CREATED:    May/02/2013
-// DATE UPDATED:
-//-------------------------------------------------------------------
 
+///-------------------------------------------------------------------
+///
+///
+///
+/// PURPOSE:        A collection of runga-kutta
+///                 methods to solve systems of
+///                 differential equations
+///
+/// AUTHOR:         Vincenzo Barbato
+///                 navyenzo@gmail.com
+///
+/// NOTE:           All things in this library are defined within the
+///                 blMathAPI namespace
+///
+/// LISENSE:        MIT-LICENCE
+///                 http://www.opensource.org/licenses/mit-license.php
+///
+///
+///
+///-------------------------------------------------------------------
 
-//-------------------------------------------------------------------
-// Includes and libs needed for this file
-//-------------------------------------------------------------------
-//-------------------------------------------------------------------
 
 
 //-------------------------------------------------------------------
-// Enums needed for this file
+// Includes needed for this file
 //-------------------------------------------------------------------
+#include <vector>
+#include "blNumericFunctions.hpp"
 //-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// NOTE: This class is defined within the blMathAPI namespace
+//-------------------------------------------------------------------
+namespace blMathAPI
+{
+//-------------------------------------------------------------------
+
 
 
 //-------------------------------------------------------------------
@@ -47,7 +52,7 @@
 // - Use it in a loop to numerically compute
 //   the solution to an ODE system
 //-------------------------------------------------------------------
-template<typename blDataType,
+template<typename blNumberType,
          typename blStateVectorType,
          typename blInitialConditionsVectorType,
          typename blRKcoeffsVectorType,
@@ -56,8 +61,8 @@ template<typename blDataType,
 inline void rk4(const blODEFunctorType& ODEfunctor,
                 const int& numberOfStateVariables,
                 const blInitialConditionsVectorType& y0,
-                const blDataType& t,
-                const blDataType& h,
+                const blNumberType& t,
+                const blNumberType& h,
                 blStateVectorType& y,
                 blRKcoeffsVectorType& RKcoeffs,
                 blStateVectorType& yTemp)
@@ -148,6 +153,7 @@ inline void rk4(const blODEFunctorType& ODEfunctor,
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // The following function calculates one step
 // of an ODE system using the 4th-order Runge-Kutta-Gill
@@ -156,7 +162,7 @@ inline void rk4(const blODEFunctorType& ODEfunctor,
 // - Use it in a loop to numerically compute
 //   the solution to an ODE system
 //-------------------------------------------------------------------
-template<typename blDataType,
+template<typename blNumberType,
          typename blStateVectorType,
          typename blInitialConditionsVectorType,
          typename blRKcoeffsVectorType,
@@ -165,8 +171,8 @@ template<typename blDataType,
 inline void rkg4(const blODEFunctorType& ODEfunctor,
                  const int& n,
                  const blInitialConditionsVectorType& y0,
-                 const blDataType& t,
-                 const blDataType& h,
+                 const blNumberType& t,
+                 const blNumberType& h,
                  blStateVectorType& y,
                  blRKcoeffsVectorType& k,
                  blStateVectorType& yTemp)
@@ -195,12 +201,12 @@ inline void rkg4(const blODEFunctorType& ODEfunctor,
     // algorithm that never
     // change
 
-    static blDataType c1 = 1.0 / std::sqrt(2.0);
-    static blDataType c2 = c1 - 0.5;
-    static blDataType c3 = 1.0 - c1;
-    static blDataType c4 = 1.0 + c1;
+    static blNumberType c1 = 1.0 / std::sqrt(2.0);
+    static blNumberType c2 = c1 - 0.5;
+    static blNumberType c3 = 1.0 - c1;
+    static blNumberType c4 = 1.0 + c1;
 
-    blDataType half_h = h / 2.0;
+    blNumberType half_h = h / 2.0;
 
     // Calculate the first
     // coefficients
@@ -269,20 +275,21 @@ inline void rkg4(const blODEFunctorType& ODEfunctor,
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // The following function numerically solves
 // an ODE system using a fixed-step 4th-order
 // Runge-Kutta algorithm
 //-------------------------------------------------------------------
-template<typename blDataType,
+template<typename blNumberType,
          typename blSolutionMatrixType,
          typename blInitialConditionsVectorType,
          typename blODEFunctorType>
 
 inline void rk4Solver(const blODEFunctorType& ODEfunctor,
                       const int& numberOfStateVariables,
-                      blDataType& t0,
-                      blDataType& tf,
+                      blNumberType& t0,
+                      blNumberType& tf,
                       const int& numberOfSteps,
                       blSolutionMatrixType& y,
                       const blInitialConditionsVectorType& y0)
@@ -309,16 +316,16 @@ inline void rk4Solver(const blODEFunctorType& ODEfunctor,
 
     // Calculate the time step
 
-    blDataType h = (tf - t0) / blDataType(numberOfSteps);
+    blNumberType h = (tf - t0) / blNumberType(numberOfSteps);
 
     // Variable used for time
 
-    blDataType t = t0;
+    blNumberType t = t0;
 
     // The vector of coefficients
     // used in the rk4 algorithm
 
-    std::vector<blDataType> RKGcoeffs(numberOfStateVariables * 4,blDataType(0));
+    std::vector<blNumberType> RKGcoeffs(numberOfStateVariables * 4,blNumberType(0));
 
     // These vectors hold the
     // following information:
@@ -329,9 +336,9 @@ inline void rk4Solver(const blODEFunctorType& ODEfunctor,
     // 3.   Intermediate calculation
     //      results
 
-    blInitialConditionsVectorType currentStateVector(numberOfStateVariables,blDataType(0));
-    blInitialConditionsVectorType initialConditions(numberOfStateVariables,blDataType(0));
-    blInitialConditionsVectorType yTemp(numberOfStateVariables,blDataType(0));
+    blInitialConditionsVectorType currentStateVector(numberOfStateVariables,blNumberType(0));
+    blInitialConditionsVectorType initialConditions(numberOfStateVariables,blNumberType(0));
+    blInitialConditionsVectorType yTemp(numberOfStateVariables,blNumberType(0));
 
     for(int i = 0; i < numberOfStateVariables; ++i)
         initialConditions[i] = y0[i];
@@ -373,7 +380,7 @@ inline void rk4Solver(const blODEFunctorType& ODEfunctor,
 // - Use it in a loop to numerically compute
 //   the solution to an ODE system
 //-------------------------------------------------------------------
-template<typename blDataType,
+template<typename blNumberType,
          typename blStateVectorType,
          typename blInitialConditionsVectorType,
          typename blRKcoeffsVectorType,
@@ -382,8 +389,8 @@ template<typename blDataType,
 inline void rkf(const blODEFunctorType& ODEfunctor,
                 const int& n,
                 const blInitialConditionsVectorType& y0,
-                const blDataType& t,
-                const blDataType& h,
+                const blNumberType& t,
+                const blNumberType& h,
                 blStateVectorType& y4th,
                 blStateVectorType& y5th,
                 blRKcoeffsVectorType& k,
@@ -483,6 +490,7 @@ inline void rkf(const blODEFunctorType& ODEfunctor,
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // The following function implements one step of
 // the CAsh-Karp algorithm for adaptive
@@ -491,7 +499,7 @@ inline void rkf(const blODEFunctorType& ODEfunctor,
 // - Use it in a loop to numerically compute
 //   the solution to an ODE system
 //-------------------------------------------------------------------
-template<typename blDataType,
+template<typename blNumberType,
          typename blStateVectorType,
          typename blInitialConditionsVectorType,
          typename blRKcoeffsVectorType,
@@ -500,8 +508,8 @@ template<typename blDataType,
 inline void rkCK(const blODEFunctorType& ODEfunctor,
                  const int& n,
                  const blInitialConditionsVectorType& y0,
-                 const blDataType& t,
-                 const blDataType& h,
+                 const blNumberType& t,
+                 const blNumberType& h,
                  blStateVectorType& y4th,
                  blStateVectorType& y5th,
                  blRKcoeffsVectorType& k,
@@ -601,12 +609,13 @@ inline void rkCK(const blODEFunctorType& ODEfunctor,
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
 // The following function numerically solves
 // an ODE system using a fixed-step 4th-order
 // Runge-Kutta algorithm
 //-------------------------------------------------------------------
-template<typename blDataType,
+template<typename blNumberType,
          typename blSolutionMatrixType,
          typename blTimeVectorType,
          typename blInitialConditionsVectorType,
@@ -614,15 +623,15 @@ template<typename blDataType,
 
 inline int rkfCKSolver(const blODEFunctorType& ODEfunctor,
                        const int& numberOfStateVariables,
-                       blDataType& t0,
-                       blDataType& tf,
+                       blNumberType& t0,
+                       blNumberType& tf,
                        const int& minNumberOfSteps,
                        const int& maxNumberOfSteps,
                        blSolutionMatrixType& y,
                        blTimeVectorType t,
                        const blInitialConditionsVectorType& y0,
-                       const blDataType& minError,
-                       const blDataType& maxError)
+                       const blNumberType& minError,
+                       const blNumberType& maxError)
 {
     if(numberOfStateVariables <= 0 ||
        minNumberOfSteps > maxNumberOfSteps ||
@@ -651,20 +660,20 @@ inline int rkfCKSolver(const blODEFunctorType& ODEfunctor,
     // Calculate the min
     // and max time steps
 
-    blDataType hmin = (tf - t0) / blDataType(maxNumberOfSteps);
-    blDataType hmax = (tf - t0) / blDataType(minNumberOfSteps);
+    blNumberType hmin = (tf - t0) / blNumberType(maxNumberOfSteps);
+    blNumberType hmax = (tf - t0) / blNumberType(minNumberOfSteps);
 
     // The time variable
 
-    blDataType currentTime = t0;
+    blNumberType currentTime = t0;
 
     // The initial time step
 
-    blDataType h = (hmax + hmin) / 2.0;
+    blNumberType h = (hmax + hmin) / 2.0;
 
     // Error for each step
 
-    blDataType stepError = 0;
+    blNumberType stepError = 0;
 
     // The actual number of
     // steps taken by the
@@ -678,13 +687,13 @@ inline int rkfCKSolver(const blODEFunctorType& ODEfunctor,
     // error is too big or too
     // small
 
-    blDataType s = 0;
+    blNumberType s = 0;
 
     // The vector of coefficients
     // used in the rkf algorithm
     // k1,k2,k3,k4,k5,k6
 
-    std::vector<blDataType> RKFcoeffs(numberOfStateVariables * 6,blDataType(0));
+    std::vector<blNumberType> RKFcoeffs(numberOfStateVariables * 6,blNumberType(0));
 
     // These vectors hold the
     // following information:
@@ -696,10 +705,10 @@ inline int rkfCKSolver(const blODEFunctorType& ODEfunctor,
     // 4.   Intermediate calculation
     //      results
 
-    blInitialConditionsVectorType y4thCurrentStateVector(numberOfStateVariables,blDataType(0));
-    blInitialConditionsVectorType y5thCurrentStateVector(numberOfStateVariables,blDataType(0));
-    blInitialConditionsVectorType initialConditions(numberOfStateVariables,blDataType(0));
-    blInitialConditionsVectorType yTemp(numberOfStateVariables,blDataType(0));
+    blInitialConditionsVectorType y4thCurrentStateVector(numberOfStateVariables,blNumberType(0));
+    blInitialConditionsVectorType y5thCurrentStateVector(numberOfStateVariables,blNumberType(0));
+    blInitialConditionsVectorType initialConditions(numberOfStateVariables,blNumberType(0));
+    blInitialConditionsVectorType yTemp(numberOfStateVariables,blNumberType(0));
 
     for(int i = 0; i < numberOfStateVariables; ++i)
         initialConditions[i] = y0[i];
@@ -781,6 +790,14 @@ inline int rkfCKSolver(const blODEFunctorType& ODEfunctor,
     return n;
 }
 //-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// End of the blMathAPI namespace
+}
+//-------------------------------------------------------------------
+
 
 
 #endif // BL_RUNGAKUTTA_HPP

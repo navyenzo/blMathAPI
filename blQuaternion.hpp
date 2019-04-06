@@ -28,6 +28,7 @@
 // Includes needed for this file
 //-------------------------------------------------------------------
 #include "blVector3dOperations.hpp"
+#include "blMatrix3dOperations.hpp"
 //-------------------------------------------------------------------
 
 
@@ -52,6 +53,15 @@ public: // Constructors and destructor
     // Default constructor
 
     blQuaternion(const blNumberType& w = 1,const blVector3d<blNumberType>& xyz = blVector3d<blNumberType>(0,0,0));
+
+
+
+    // Constructor from four inputs
+
+    blQuaternion(const blNumberType& w,
+                 const blNumberType& x,
+                 const blNumberType& y,
+                 const blNumberType& z);
 
 
 
@@ -125,6 +135,22 @@ inline blQuaternion<blNumberType>::blQuaternion(const blNumberType& w,
 {
     m_w = w;
     m_xyz = xyz;
+}
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+template<typename blNumberType>
+inline blQuaternion<blNumberType>::blQuaternion(const blNumberType& w,
+                                                const blNumberType& x,
+                                                const blNumberType& y,
+                                                const blNumberType& z)
+{
+    m_w = w;
+    m_xyz.x() = x;
+    m_xyz.y() = y;
+    m_xyz.z() = z;
 }
 //-------------------------------------------------------------------
 
@@ -290,12 +316,14 @@ inline blQuaternion<blNumberType> blQuaternion<blNumberType>::operator+(const bl
 template<typename blNumberType>
 inline blQuaternion<blNumberType> blQuaternion<blNumberType>::operator*(const blQuaternion<blNumberType>& qtn)const
 {
-    blNumberType newW = m_w*qtn.w() - m_xyz.x()*qtn.xyz().x() - m_xyz.y()*qtn.xyz().y() - m_xyz.z()*qtn.xyz().z();
-    blNumberType newX = m_w*qtn.xyz().x() + m_xyz.x()*qtn.w() + m_xyz.y()*qtn.xyz().z() - m_xyz.z()*qtn.xyz().y();
-    blNumberType newY = m_w*qtn.xyz().y() + m_xyz.y()*qtn.w() + m_xyz.z()*qtn.xyz().x() - m_xyz.x()*qtn.xyz().z();
-    blNumberType newZ = m_w*qtn.xyz().z() + m_xyz.z()*qtn.w() + m_xyz.x()*qtn.xyz().y() - m_xyz.y()*qtn.xyz().x();
+    blQuaternion<blNumberType> newQtn;
 
-    return blQuaternion<blNumberType>(newW,blVector3d<blNumberType>(newX,newY,newZ));
+    newQtn.w()       = qtn.w()*m_w       - qtn.xyz().x()*m_xyz.x() - qtn.xyz().y()*m_xyz.y() - qtn.xyz().z()*m_xyz.z();
+    newQtn.xyz().x() = qtn.w()*m_xyz.x() + qtn.xyz().x()*m_w       - qtn.xyz().y()*m_xyz.z() + qtn.xyz().z()*m_xyz.y();
+    newQtn.xyz().y() = qtn.w()*m_xyz.y() + qtn.xyz().x()*m_xyz.z() + qtn.xyz().y()*m_w       - qtn.xyz().z()*m_xyz.x();
+    newQtn.xyz().z() = qtn.w()*m_xyz.z() - qtn.xyz().x()*m_xyz.y() + qtn.xyz().y()*m_xyz.x() + qtn.xyz().z()*m_w;
+
+    return newQtn;
 }
 //-------------------------------------------------------------------
 
@@ -338,15 +366,14 @@ inline blQuaternion<blNumberType> blQuaternion<blNumberType>::operator/(const bl
 {
     blNumberType denominator = qtn.w()*qtn.w() + qtn.xyz().x()*qtn.xyz().x() + qtn.xyz().y()*qtn.xyz().y() + qtn.xyz().z()*qtn.xyz().z();
 
-    blNumberType newW = ( qtn.w()*m_w + qtn.xyz().x()*m_xyz.x() + qtn.xyz().y()*m_xyz.y() + qtn.xyz().z()*m_xyz.z() ) / denominator;
+    blQuaternion<blNumberType> newQtn;
 
-    blNumberType newX = ( qtn.w()*m_xyz.x() - qtn.xyz().x()*m_w - qtn.xyz().y()*m_w + qtn.xyz().z()*m_xyz.y() ) / denominator;
+    newQtn.w()       = (qtn.w()*m_w + qtn.xyz().x()*m_xyz.x()       + qtn.xyz().y()*m_xyz.y() + qtn.xyz().z()*m_xyz.z())/denominator;
+    newQtn.xyz().x() = (qtn.w()*m_xyz.x() - qtn.xyz().x()*m_w       - qtn.xyz().y()*m_xyz.z() + qtn.xyz().z()*m_xyz.y())/denominator;
+    newQtn.xyz().y() = (qtn.w()*m_xyz.y() + qtn.xyz().x()*m_xyz.z() - qtn.xyz().y()*m_w       - qtn.xyz().z()*m_xyz.x())/denominator;
+    newQtn.xyz().z() = (qtn.w()*m_xyz.z() - qtn.xyz().x()*m_xyz.y() + qtn.xyz().y()*m_xyz.x() - qtn.xyz().z()*m_w)/denominator;
 
-    blNumberType newY = ( qtn.w()*m_xyz.y() + qtn.xyz().x()*m_xyz.z() - qtn.xyz().y()*m_w - qtn.xyz().z()*m_w ) / denominator;
-
-    blNumberType newZ = ( qtn.w()*m_xyz.z() - qtn.xyz().x()*m_xyz.y() + qtn.xyz().y()*m_xyz.x() - qtn.xyz().z()*m_w ) / denominator;
-
-    return blQuaternion<blNumberType>(newW,blVector3d<blNumberType>(newX,newY,newZ));
+    return newQtn;
 }
 //-------------------------------------------------------------------
 

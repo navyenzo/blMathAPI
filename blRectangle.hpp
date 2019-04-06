@@ -2,86 +2,111 @@
 #define BL_RECTANGLE_HPP
 
 
-//-------------------------------------------------------------------
-// FILE:            blRectangle.hpp
-// CLASS:           blRectangle
-// BASE CLASS:      None
-//
-// PURPOSE:         A simple rectangle class
-//
-// AUTHOR:          Vincenzo Barbato
-//                  http://www.barbatolabs.com
-//                  navyenzo@gmail.com
-//
-// LISENSE:         MIT-LICENCE
-//                  http://www.opensource.org/licenses/mit-license.php
-//
-// DEPENDENCIES:
-//
-// NOTES:
-//-------------------------------------------------------------------
 
+///-------------------------------------------------------------------
+///
+///
+///
+/// PURPOSE:        A simple rectangle class
+///
+/// AUTHOR:         Vincenzo Barbato
+///                 navyenzo@gmail.com
+///
+/// NOTE:           All things in this library are defined within the
+///                 blMathAPI namespace
+///
+/// LISENSE:        MIT-LICENCE
+///                 http://www.opensource.org/licenses/mit-license.php
+///
+///
+///
+///-------------------------------------------------------------------
 
-//-------------------------------------------------------------------
-// Includes and libs needed for this file
-//-------------------------------------------------------------------
-//-------------------------------------------------------------------
 
 
 //-------------------------------------------------------------------
-// Enums used for this file and sub-files
+// Includes needed for this file
 //-------------------------------------------------------------------
+#include "blPoint2dOperations.hpp"
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
+// NOTE: This class is defined within the blMathAPI namespace
+//-------------------------------------------------------------------
+namespace blMathAPI
+{
+//-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+template<typename blNumberType>
 class blRectangle
 {
 public: // Constructors and destructors
 
+
+
     // Default constructor
 
-    blRectangle(const blDataType& x1 = blDataType(0),
-                const blDataType& y1 = blDataType(0),
-                const blDataType& x2 = blDataType(0),
-                const blDataType& y2 = blDataType(0));
+    blRectangle(const blNumberType& x1 = blNumberType(0),
+                const blNumberType& y1 = blNumberType(0),
+                const blNumberType& x2 = blNumberType(0),
+                const blNumberType& y2 = blNumberType(0));
+
+
 
     // Constructor from
     // two points
 
-    blRectangle(const blPoint2d<blDataType>& P1,
-                const blPoint2d<blDataType>& P2);
+    blRectangle(const blPoint2d<blNumberType>& P1,
+                const blPoint2d<blNumberType>& P2);
+
+
 
     // Copy constructor
 
-    template<typename blDataType2>
-    blRectangle(const blRectangle<blDataType2>& rectangle);
+    template<typename blNumberType2>
+    blRectangle(const blRectangle<blNumberType2>& rectangle);
 
-    // Virtual destructor
 
-    virtual ~blRectangle()
+
+    // Destructor
+
+    ~blRectangle()
     {
     }
 
+
+
 public: // Overloaded operators
 
-    template<typename blDataType2>
-    blRectangle<blDataType>&                operator=(const blRectangle<blDataType2>& rectangle);
 
-    bool                                    operator==(const blRectangle<blDataType>& rectangle)const;
-    bool                                    operator!=(const blRectangle<blDataType>& rectangle)const;
+
+    template<typename blNumberType2>
+    blRectangle<blNumberType>&              operator=(const blRectangle<blNumberType2>& rectangle);
+
+    bool                                    operator==(const blRectangle<blNumberType>& rectangle)const;
+    bool                                    operator!=(const blRectangle<blNumberType>& rectangle)const;
+
+
 
 public: // Public functions
+
+
 
     // Functions used to get/set
     // the rectangle's point coordinates
 
-    const blPoint2d<blDataType>&            p1()const;
-    const blPoint2d<blDataType>&            p2()const;
+    const blPoint2d<blNumberType>&          p1()const;
+    const blPoint2d<blNumberType>&          p2()const;
 
-    blPoint2d<blDataType>&                  p1();
-    blPoint2d<blDataType>&                  p2();
+    blPoint2d<blNumberType>&                p1();
+    blPoint2d<blNumberType>&                p2();
+
+
 
     // Function used to
     // reset the rectangle
@@ -89,22 +114,27 @@ public: // Public functions
 
     void                                    reset();
 
+
+
 private: // Private variables
+
+
 
     // Rectangle coordinates
 
-    blPoint2d<blDataType>                   m_p1;
-    blPoint2d<blDataType>                   m_p2;
+    blPoint2d<blNumberType>                 m_p1;
+    blPoint2d<blNumberType>                 m_p2;
 };
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blRectangle<blDataType>::blRectangle(const blDataType& x1,
-                                            const blDataType& y1,
-                                            const blDataType& x2,
-                                            const blDataType& y2)
+template<typename blNumberType>
+inline blRectangle<blNumberType>::blRectangle(const blNumberType& x1,
+                                            const blNumberType& y1,
+                                            const blNumberType& x2,
+                                            const blNumberType& y2)
 {
     m_p1.x() = x1;
     m_p1.y() = y1;
@@ -115,10 +145,11 @@ inline blRectangle<blDataType>::blRectangle(const blDataType& x1,
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blRectangle<blDataType>::blRectangle(const blPoint2d<blDataType>& P1,
-                                            const blPoint2d<blDataType>& P2)
+template<typename blNumberType>
+inline blRectangle<blNumberType>::blRectangle(const blPoint2d<blNumberType>& P1,
+                                            const blPoint2d<blNumberType>& P2)
 {
     m_p1 = P1;
     m_p2 = P2;
@@ -126,10 +157,11 @@ inline blRectangle<blDataType>::blRectangle(const blPoint2d<blDataType>& P1,
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-template<typename blDataType2>
-inline blRectangle<blDataType>::blRectangle(const blRectangle<blDataType2>& rectangle)
+template<typename blNumberType>
+template<typename blNumberType2>
+inline blRectangle<blNumberType>::blRectangle(const blRectangle<blNumberType2>& rectangle)
 {
     m_p1 = rectangle.p1();
     m_p2 = rectangle.p2();
@@ -137,15 +169,16 @@ inline blRectangle<blDataType>::blRectangle(const blRectangle<blDataType2>& rect
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-template<typename blDataType2>
-inline blRectangle<blDataType>& blRectangle<blDataType>::operator=(const blRectangle<blDataType2>& rectangle)
+template<typename blNumberType>
+template<typename blNumberType2>
+inline blRectangle<blNumberType>& blRectangle<blNumberType>::operator=(const blRectangle<blNumberType2>& rectangle)
 {
     if(this != &rectangle)
     {
-        m_p1 = blPoint2d<blDataType>(rectangle.p1());
-        m_p2 = blPoint2d<blDataType>(rectangle.p2());
+        m_p1 = blPoint2d<blNumberType>(rectangle.p1());
+        m_p2 = blPoint2d<blNumberType>(rectangle.p2());
     }
 
     return (*this);
@@ -153,9 +186,10 @@ inline blRectangle<blDataType>& blRectangle<blDataType>::operator=(const blRecta
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline bool blRectangle<blDataType>::operator==(const blRectangle<blDataType>& rectangle)const
+template<typename blNumberType>
+inline bool blRectangle<blNumberType>::operator==(const blRectangle<blNumberType>& rectangle)const
 {
     if(m_p1 == rectangle.p1() && m_p2 == rectangle.p2())
     {
@@ -167,9 +201,10 @@ inline bool blRectangle<blDataType>::operator==(const blRectangle<blDataType>& r
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline bool blRectangle<blDataType>::operator!=(const blRectangle<blDataType>& rectangle)const
+template<typename blNumberType>
+inline bool blRectangle<blNumberType>::operator!=(const blRectangle<blNumberType>& rectangle)const
 {
     if(m_p1 == rectangle.p1() && m_p2 == rectangle.p2())
     {
@@ -181,45 +216,50 @@ inline bool blRectangle<blDataType>::operator!=(const blRectangle<blDataType>& r
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline const blPoint2d<blDataType>& blRectangle<blDataType>::p1()const
+template<typename blNumberType>
+inline const blPoint2d<blNumberType>& blRectangle<blNumberType>::p1()const
 {
     return m_p1;
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline const blPoint2d<blDataType>& blRectangle<blDataType>::p2()const
+template<typename blNumberType>
+inline const blPoint2d<blNumberType>& blRectangle<blNumberType>::p2()const
 {
     return m_p2;
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blPoint2d<blDataType>& blRectangle<blDataType>::p1()
+template<typename blNumberType>
+inline blPoint2d<blNumberType>& blRectangle<blNumberType>::p1()
 {
     return m_p1;
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline blPoint2d<blDataType>& blRectangle<blDataType>::p2()
+template<typename blNumberType>
+inline blPoint2d<blNumberType>& blRectangle<blNumberType>::p2()
 {
     return m_p2;
 }
 //-------------------------------------------------------------------
 
 
+
 //-------------------------------------------------------------------
-template<typename blDataType>
-inline void blRectangle<blDataType>::reset()
+template<typename blNumberType>
+inline void blRectangle<blNumberType>::reset()
 {
     m_p1.x() = 0;
     m_p1.y() = 0;
@@ -228,6 +268,14 @@ inline void blRectangle<blDataType>::reset()
     m_p2.y() = 0;
 }
 //-------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------
+// End of the blMathAPI namespace
+}
+//-------------------------------------------------------------------
+
 
 
 #endif // BL_RECTANGLE_HPP
