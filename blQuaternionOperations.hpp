@@ -247,6 +247,20 @@ inline blVector3d<blNumberType> quaternionToEulerAngles(const blQuaternion<blNum
 // to a quaternion
 //-------------------------------------------------------------------
 template<typename blNumberType>
+inline blQuaternion<blNumberType>& axisAngleToQuaternion(const blNumberType& x,
+                                                         const blNumberType& y,
+                                                         const blNumberType& z,
+                                                         const blNumberType& angle,
+                                                         blQuaternion<blNumberType>& qtn)
+{
+    blMathAPI::blVector3d<blNumberType> axis = blMathAPI::blVector3d(x,y,z);
+
+    return axisAngleToQuaternion(axis,angle,qtn);
+}
+
+
+
+template<typename blNumberType>
 inline blQuaternion<blNumberType>& axisAngleToQuaternion(const blVector3d<blNumberType>& axis,
                                                          const blNumberType& angle,
                                                          blQuaternion<blNumberType>& qtn)
@@ -257,7 +271,7 @@ inline blQuaternion<blNumberType>& axisAngleToQuaternion(const blVector3d<blNumb
 
     blNumberType scalar = std::sin(angle/blNumberType(2));
 
-    qtn.xyz() = axis * scalar;
+    qtn.xyz() = normalizedAxis * scalar;
 
     normalize(qtn);
 
